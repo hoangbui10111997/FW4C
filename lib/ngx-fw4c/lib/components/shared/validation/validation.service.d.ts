@@ -1,0 +1,47 @@
+import { RendererFactory2, EventEmitter } from '@angular/core';
+import { ValidationOption, ClientValidator, SummaryError, ValidationRule, ChangedItem } from './validation.model';
+import { Observable } from 'rxjs';
+import { DataService, ActionService } from '../services';
+import { ValidationProvider } from './validation.provider';
+export declare class ValidationService {
+    protected rendererFactory: RendererFactory2;
+    protected validationProvider: ValidationProvider;
+    private _dataService;
+    private _actionService;
+    onDestroy: EventEmitter<void>;
+    private elements;
+    private validator;
+    private errClass;
+    private styles;
+    private attributeName;
+    private renderer;
+    private relatedProviders;
+    private subscriptions;
+    private virtualValidationOptions;
+    private changedItems;
+    constructor(rendererFactory: RendererFactory2, validationProvider: ValidationProvider, _dataService: DataService, _actionService: ActionService);
+    ngOnDestroy(): void;
+    init(model: {
+        validator: ClientValidator;
+    }): void;
+    updateAsync(relatedProvidersToRegister?: ValidationService[]): void;
+    executeAsync(validCallback: (errors?: SummaryError[]) => any, invalidCallback?: (errors?: SummaryError[]) => any): Observable<boolean>;
+    isValid(show?: boolean, focus?: boolean): boolean;
+    handleErrors(callback?: (response: SummaryError[]) => void): void;
+    commit(callback?: Function): Observable<boolean>;
+    setElementError(element: Element, action: ValidationRule, option: ValidationOption): string;
+    clearErrorItemElement(element: any, action: ValidationRule): void;
+    isDirty(callback?: (items: ChangedItem[]) => void): boolean;
+    validateElement(element: any, option: ValidationOption): Observable<ValidationOption>;
+    private validateRelevantFields;
+    private retrieveSummaryErrors;
+    private findElementOption;
+    private findErrorItemElement;
+    private findDynamicSequenceId;
+    private findErrorElement;
+    private registerElements;
+    private registerEvents;
+    private handleBlurEvent;
+    private syncErrorMessages;
+    private addRelatedProviders;
+}
