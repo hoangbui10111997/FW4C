@@ -1,5 +1,6 @@
 import { Type, EventEmitter } from '@angular/core';
 import { ChangeType } from '../enums/base.enum';
+import { Observable } from 'rxjs';
 export declare class MockData<T> {
     mockData?: any;
     constructor(init?: Partial<MockData<T>>);
@@ -33,6 +34,7 @@ export declare class SearchBaseResponse<T> {
 }
 export declare class BaseTemplate {
     data?: any;
+    validationKey?: string;
     template?: Type<any>;
     constructor(init?: Partial<BaseTemplate>);
 }
@@ -74,6 +76,7 @@ export declare class ExtendedMainMenuGroup {
     label: string;
     children: any[];
     icon: string;
+    selected?: boolean;
     constructor(init?: Partial<ExtendedMainMenuGroup>);
 }
 export declare class KeyValueItem {
@@ -102,6 +105,7 @@ export declare class MenuItem {
     items: ExtendedMainMenuGroup[];
     subName: string;
     name?: string;
+    selected?: boolean;
     constructor(init?: Partial<MenuItem>);
 }
 export declare class Breadcrumb {
@@ -132,4 +136,19 @@ export declare class TrackingDetail {
     description: string;
     time: Date;
     constructor(init?: Partial<TrackingDetail>);
+}
+export declare class RecommendationResponse {
+    selectedMenu?: string;
+    keyword?: string;
+    show: boolean;
+    searchPath?: string;
+    template?: Type<any>;
+    label: string;
+    deboundTime: number;
+    all: boolean;
+    constructor(init?: Partial<RecommendationResponse>);
+}
+export interface ICallback<T> {
+    isValid: () => boolean;
+    callback: (value: any) => Observable<T>;
 }

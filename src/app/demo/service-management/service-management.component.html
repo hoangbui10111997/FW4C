@@ -1,4 +1,5 @@
 <katana-card>
+    <p style="color: red; text-align: center; background-color: lightpink; padding: 10px 10px; border-radius: 25px;" *ngIf="iserror">{{error}}</p>
     <katana-table [option]="option" #tableTemplate>
         <ng-template let-item="item" katana-row-detail>
             <pre>{{item|json}}</pre>

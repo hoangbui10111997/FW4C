@@ -1,13 +1,16 @@
 import { RendererFactory2, EventEmitter } from '@angular/core';
 import { ValidationOption, ClientValidator, SummaryError, ValidationRule, ChangedItem } from './validation.model';
 import { Observable } from 'rxjs';
-import { DataService, ActionService } from '../services';
+import { DataService } from '../services/data.service';
 import { ValidationProvider } from './validation.provider';
+import { ActionService } from '../services/action.service';
+import { AggregatorService } from '../services/aggregator.service';
 export declare class ValidationService {
     protected rendererFactory: RendererFactory2;
     protected validationProvider: ValidationProvider;
     private _dataService;
     private _actionService;
+    private _aggregatorService;
     onDestroy: EventEmitter<void>;
     private elements;
     private validator;
@@ -19,12 +22,14 @@ export declare class ValidationService {
     private subscriptions;
     private virtualValidationOptions;
     private changedItems;
-    constructor(rendererFactory: RendererFactory2, validationProvider: ValidationProvider, _dataService: DataService, _actionService: ActionService);
+    private key;
+    constructor(rendererFactory: RendererFactory2, validationProvider: ValidationProvider, _dataService: DataService, _actionService: ActionService, _aggregatorService: AggregatorService);
     ngOnDestroy(): void;
     init(model: {
         validator: ClientValidator;
     }): void;
-    updateAsync(relatedProvidersToRegister?: ValidationService[]): void;
+    setKey(key: string): void;
+    updateAsync(relatedProvidersToRegister?: ValidationService[], item?: any): void;
     executeAsync(validCallback: (errors?: SummaryError[]) => any, invalidCallback?: (errors?: SummaryError[]) => any): Observable<boolean>;
     isValid(show?: boolean, focus?: boolean): boolean;
     handleErrors(callback?: (response: SummaryError[]) => void): void;
@@ -32,7 +37,9 @@ export declare class ValidationService {
     setElementError(element: Element, action: ValidationRule, option: ValidationOption): string;
     clearErrorItemElement(element: any, action: ValidationRule): void;
     isDirty(callback?: (items: ChangedItem[]) => void): boolean;
-    validateElement(element: any, option: ValidationOption): Observable<ValidationOption>;
+    syncErrorMessages(element: any, option: ValidationOption): SummaryError | null;
+    validateElementAsync(element: any, option: ValidationOption): Observable<SummaryError[]>;
+    validateElement(element: any, option: ValidationOption, all?: boolean): Observable<ValidationOption>;
     private validateRelevantFields;
     private retrieveSummaryErrors;
     private findElementOption;
@@ -42,6 +49,5 @@ export declare class ValidationService {
     private registerElements;
     private registerEvents;
     private handleBlurEvent;
-    private syncErrorMessages;
     private addRelatedProviders;
 }

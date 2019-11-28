@@ -1,22 +1,26 @@
-import { AfterViewInit, OnInit, EventEmitter } from "@angular/core";
+import { OnInit, EventEmitter, OnChanges } from "@angular/core";
 import { ActivatedRoute, Router } from '@angular/router';
 import { DefaultLayoutService } from './layout.service';
 import { MenuService } from '../shared/services/menu.service';
 import { ExtendedMainMenuGroup, MenuTab, MenuItem, Breadcrumb } from '../shared/models/base.model';
 import { ActionService } from '../shared/services/action.service';
-export declare class DefaultSidebarComponent implements OnInit, AfterViewInit {
+import { AggregatorService } from '../shared/services/aggregator.service';
+export declare class DefaultSidebarComponent implements OnInit, OnChanges {
     workspaceLayoutService: DefaultLayoutService;
     protected route: ActivatedRoute;
     protected router: Router;
     protected menuService: MenuService;
     protected actionService: ActionService;
+    protected aggregatorService: AggregatorService;
     menuTabs: MenuTab[];
     navigateTo: (menu: string, router: Router) => void;
     set: (role: string) => MenuItem;
+    menuType: string;
+    setActive: boolean;
     change: EventEmitter<Breadcrumb[]>;
+    currentUrl: string;
     menuItems: ExtendedMainMenuGroup[];
     isCollapsedSideBar: string;
-    currentUrl: string;
     collapsedItems: ExtendedMainMenuGroup[];
     isSupplier: boolean;
     tabs: {
@@ -28,15 +32,12 @@ export declare class DefaultSidebarComponent implements OnInit, AfterViewInit {
     isPageLoad: boolean;
     isMobile: boolean;
     clicked: boolean;
-    constructor(workspaceLayoutService: DefaultLayoutService, route: ActivatedRoute, router: Router, menuService: MenuService, actionService: ActionService);
-    ngAfterViewInit(): void;
+    constructor(workspaceLayoutService: DefaultLayoutService, route: ActivatedRoute, router: Router, menuService: MenuService, actionService: ActionService, aggregatorService: AggregatorService);
+    ngOnChanges(): void;
     ngOnInit(): void;
     toggleMenu(): void;
-    removeActiveStateNavigationMenu(): void;
-    toggleGroup(group: ExtendedMainMenuGroup, $event: any): void;
-    isGroupCollapsed(group: ExtendedMainMenuGroup): boolean;
     toggleOpenedSidebar(): void;
     loadMenu(menu: string): void;
-    selectItem($event: any, item: any): void;
-    changeItem(item: any): void;
+    selectItem(item: any): void;
+    private selectMenu;
 }

@@ -1,7 +1,7 @@
 export class Service {
     name: string;
     host: string;
-    tags: string;
+    tags: string[];
     url: string;
     port: number;
     path: string;

@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { TableComponent } from './table.component';
 import { TemplateRef, ElementRef, Type } from '@angular/core';
+import { ValidationOption } from '../validation/validation.model';
 export interface TableEditInline {
     enabled?: boolean;
     autoCommit?: boolean;
@@ -14,6 +15,7 @@ export interface TableCell {
 export declare class TableColumn {
     title?: () => string;
     valueRef?: () => any;
+    inlineCallback?: (item?: any, field?: string) => any;
     direction?: string;
     allowSort?: boolean;
     allowFilter?: boolean;
@@ -25,6 +27,7 @@ export declare class TableColumn {
     type?: TableColumnType;
     showTooltip?: boolean;
     editInline?: boolean;
+    validationOption?: ValidationOption;
     callback?: (provider?: TableComponent, element?: ElementRef, $event?: any) => any;
     customTemplate?: () => TemplateRef<any>;
     hide?: () => boolean;
@@ -112,10 +115,22 @@ export declare class TableDatetimeFormat {
     constructor(init: Partial<TableDatetimeFormat>);
 }
 export declare class EdittedField {
-    item: any;
+    item?: any;
     field?: string;
     index?: number;
     constructor(init: Partial<EdittedField>);
+}
+export declare class ChangedCell {
+    oldValue?: any;
+    field?: string;
+    currentValue?: any;
+    constructor(init: Partial<ChangedCell>);
+}
+export declare class ChangedRow {
+    currentItem?: any;
+    oldItem?: any;
+    cells?: ChangedCell[];
+    constructor(init: Partial<ChangedRow>);
 }
 export declare class TableOption {
     sort?: (a: any, b: any, orderBy: string) => number;
@@ -124,7 +139,7 @@ export declare class TableOption {
     paging?: boolean;
     selectedItems?: any[];
     serviceProvider?: TableServiceProvider;
-    localData?: () => any[];
+    localData?: () => Observable<any[]>;
     request?: TableRequest;
     mainColumns: TableColumn[];
     displayText?: TableText;

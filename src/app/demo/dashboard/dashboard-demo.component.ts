@@ -1,6 +1,4 @@
 import { Component, ViewChild, TemplateRef, OnInit } from "@angular/core";
-import { ButtonDemoComponent } from "../button";
-import { of } from "rxjs";
 import {
   TableOption,
   ModalService,
@@ -13,7 +11,6 @@ import {
   TableColumnType
 } from "ngx-fw4c";
 import { HttpClient } from "@angular/common/http";
-import { resolve } from "q";
 import { DashboardDemoService } from "./dashboard-demo.service";
 
 @Component({
