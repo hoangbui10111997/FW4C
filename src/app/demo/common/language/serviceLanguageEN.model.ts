@@ -93,9 +93,11 @@ export class tableAction {
     save: string;
     import: string;
     export: string;
+    template: string;
 
     constructor() {
         this.new = 'New';
+        this.template = 'Template'
         this.edit = 'Edit';
         this.refresh = 'Refresh';
         this.delete = 'Delete';

@@ -117,11 +117,11 @@ export class ServiceManagementComponent implements OnInit {
           }
         },
         {
-          icon: "fa fa-refresh",
-          title: () => this.tableAction.refresh,
-          executeAsync: item => {
-            this.getLocalData();
-            this.tableTemplate.reload();
+          icon: "fa fa-file",
+          title: () => this.tableAction.template,
+          customClass: 'info',
+          executeAsync: () => {
+            this._serviceManagementService.exportTemplate();
           }
         }
       ],
@@ -257,10 +257,7 @@ export class ServiceManagementComponent implements OnInit {
                 return this._serviceTemplateService.validateName(value);
               }),
               new CustomValidationRule(value => {
-                if(this.tableTemplate.changedRows.length < 1) {
-                  console.log(1);
-                  var item = this.items.filter(x => x.name !== value);
-                }
+                var item = this.items.filter(x => x.name !== value);
                 return this._serviceTemplateService.validateNameService(value, item);
               }),
             ]

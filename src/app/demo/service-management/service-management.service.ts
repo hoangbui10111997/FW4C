@@ -70,12 +70,12 @@ export class ServiceManagementService {
     const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';  
     const EXCEL_EXTENSION = '.xlsx'; 
     const dataService = new Blob([buffer], {type: EXCEL_TYPE});
-    FileSaver.saveAs(dataService, 'Service_'+fileName+EXCEL_EXTENSION);
+    FileSaver.saveAs(dataService, fileName+EXCEL_EXTENSION);
   }
 
   public exportExcel(datas: any[]) {
     var exelData = [];
-    let fileName = Date.now().toString();
+    let fileName = 'Service_'+Date.now().toString();
     for(let i = 0; i < datas.length; i++) {
       const data = datas[i];
       delete data.create;
@@ -84,6 +84,29 @@ export class ServiceManagementService {
       exelData.push(data);
     }
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datas);
+    const workbook: XLSX.WorkBook = {Sheets:{'data': worksheet}, SheetNames: ['data']};
+    const excelBuffer: any = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+    this.saveAsExcel(excelBuffer, fileName);
+  }
+
+  public exportTemplate() {
+    let fileName = 'Template_Service_'+Date.now().toString();
+    var data = [];
+    data[0] = {
+      name: '',
+      host: '',
+      tags: '',
+      url: '',
+      port: '',
+      path: '',
+      protocol: '',
+      retries: '',
+      connect_timeout: '',
+      write_timeout: '',
+      read_timeout: '',
+      client_certificate: ''
+    };
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
     const workbook: XLSX.WorkBook = {Sheets:{'data': worksheet}, SheetNames: ['data']};
     const excelBuffer: any = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
     this.saveAsExcel(excelBuffer, fileName);

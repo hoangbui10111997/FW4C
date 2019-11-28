@@ -35,7 +35,7 @@ const routes: Routes = [
         url: '/dashboard'
       },
       menuTabs: menuTabs,
-      menuType: 'LEFT'
+      menuType: 'TOP'
     },
     children: [
       {
