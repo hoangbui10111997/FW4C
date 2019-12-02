@@ -6,11 +6,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceManagementComponent } from './service-management/service-management.component';
 import { ServiceTemplateComponent } from './service-management/service-template/service-template.component';
+import { ImportExcelComponent } from './service-management/import-excel/import-excel.component';
 
 const declarations = [
   DashboardDemoComponent,
   ServiceManagementComponent,
-  ServiceTemplateComponent
+  ServiceTemplateComponent,
+  ImportExcelComponent
 ];
 
 @NgModule({

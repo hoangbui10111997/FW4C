@@ -6,7 +6,7 @@ import { Service } from './service.model';
 import { tableTitleService, tableAction, actionButton, actionTitle, actionMessageService } from '../common/language/serviceLanguageEN.model';
 import { of } from 'rxjs';
 import { ServiceTemplateService } from '../service-management/service-template/service-template.service'
-import { filter } from 'rxjs/operators';
+import { ImportExcelComponent } from './import-excel/import-excel.component';
 
 @Component({
   selector: 'app-service-management',
@@ -87,6 +87,7 @@ export class ServiceManagementComponent implements OnInit {
         {
           icon: "fa fa-save",
           customClass: "warning",
+          lazyload: true,
           hide: () => {
             if(this.tableTemplate.changedRows.length === 0) {
               return true;
@@ -112,8 +113,49 @@ export class ServiceManagementComponent implements OnInit {
           icon: "fa fa-download",
           title: () => this.tableAction.export,
           customClass: 'primary',
+          lazyload: true,
           executeAsync: () => {
-            this._serviceManagementService.exportExcel(this.items);
+            var clonedItems = this._dataService.cloneItems(this.items);
+            this._serviceManagementService.exportExcel(clonedItems);
+          }
+        },
+        {
+          icon: "fa fa-upload",
+          title: () => this.tableAction.import,
+          customClass: 'primary',
+          executeAsync: () => {
+            this._modalService.showTemplateDialog(new TemplateViewModel({
+              template: ImportExcelComponent,
+              icon: 'fa fa-upload',
+              title: this.actionTitle.import,
+              validationKey: 'ImportExcelComponent',
+              acceptCallback: items => {
+                for(let i = 0; i < items.length; i++) {
+                  const item = items[i];
+                  var element: Service = new Service();
+                  element.name = item.name;
+                  element.host = item.host;
+                  element.client_certificate = item.client_certificate;
+                  element.connect_timeout = item.connect_timeout;
+                  element.path = item.path;
+                  element.port = item.port;
+                  element.protocol = item.protocol;
+                  element.read_timeout = item.read_timeout;
+                  element.retries = item.retries;
+                  element.tags = item.tags? item.tags.split(','):[];
+                  element.url = item.url;
+                  element.write_timeout = item.write_timeout;
+                  this._serviceManagementService.createService(element)
+                  .subscribe(() => {
+                    if (i === (items.length - 1))
+                    {
+                      this.getLocalData;
+                      this.tableTemplate.reload();
+                    }
+                  })
+                }
+              }
+            }))
           }
         },
         {
@@ -258,6 +300,7 @@ export class ServiceManagementComponent implements OnInit {
               }),
               new CustomValidationRule(value => {
                 var item = this.items.filter(x => x.name !== value);
+                debugger
                 return this._serviceTemplateService.validateNameService(value, item);
               }),
             ]
@@ -280,10 +323,31 @@ export class ServiceManagementComponent implements OnInit {
         },
         {
           type: TableColumnType.String,
+          title: () => this.tableTitle.tag,
+          valueRef: () => "tags",
+          width: 150,
+          allowFilter: true,
+          validationOption: new ValidationOption({
+            rules: [
+              new CustomValidationRule(value => {
+                return this._serviceTemplateService.validateName(value);
+              })
+            ]
+          })
+        },
+        {
+          type: TableColumnType.String,
           title: () => this.tableTitle.path,
           valueRef: () => "path",
           width: 150,
-          allowFilter: false
+          allowFilter: false,
+          validationOption: new ValidationOption({
+            rules: [
+              new CustomValidationRule(value => {
+                return this._serviceTemplateService.validatePath(value);
+              })
+            ]
+          })
         },
         {
           type: TableColumnType.Number,

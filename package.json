@@ -27,6 +27,7 @@
     "@ckeditor/ckeditor5-build-classic": "^15.0.0",
     "@ng-select/ng-select": "^3.3.0",
     "@swimlane/ngx-dnd": "^8.1.0",
+    "@types/xlsx": "0.0.36",
     "bootstrap": "^4.3.1",
     "file-saver": "^2.0.2",
     "font-awesome": "^4.7.0",
@@ -36,9 +37,11 @@
     "ng4-loading-spinner": "^1.2.3",
     "ngx-bootstrap": "^5.2.0",
     "ngx-pipes": "^2.6.0",
+    "remove-use-strict": "^1.0.0",
     "rxjs": "~6.4.0",
+    "ts-xlsx": "0.0.11",
     "tslib": "^1.10.0",
-    "xlsx": "^0.15.2",
+    "xlsx": "^0.15.3",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {

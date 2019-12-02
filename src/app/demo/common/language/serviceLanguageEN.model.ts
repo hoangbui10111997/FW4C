@@ -72,6 +72,7 @@ export class tableTitleService {
     time_create: string;
     time_update: string;
     path: string;
+    tag: string;
 
     constructor() {
         this.name = 'Name';
@@ -81,6 +82,7 @@ export class tableTitleService {
         this.time_create = 'Time Created';
         this.time_update = 'Recent Updated';
         this.path = 'Path';
+        this.tag = 'Tag'
     }
 }
 
@@ -131,6 +133,7 @@ export class actionButton {
 export class actionTitle {
     addService: string;
     delete: string;
+    import: string;
     editService(name): string {
         return 'Edit ' + name + ' service';
     }
@@ -138,6 +141,7 @@ export class actionTitle {
     constructor() {
         this.addService = 'ADD NEW SERVICE';
         this.delete = 'DELETE';
+        this.import = 'IMPORT SERVICE';
     }
 }
 
