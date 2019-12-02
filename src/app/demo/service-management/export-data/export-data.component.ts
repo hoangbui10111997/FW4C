@@ -17,7 +17,6 @@ export class ExportDataComponent implements OnInit {
   }
 
   public getSelection(input: any): void {
-    console.log(input.target.value);
     this.data = input.target.value;
   }
 

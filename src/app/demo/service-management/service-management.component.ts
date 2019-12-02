@@ -127,6 +127,9 @@ export class ServiceManagementComponent implements OnInit {
 						      this._serviceManagementService.exportExcel(data);
                 } else if (data === 'Template') {
                   this._serviceManagementService.exportTemplate();
+                } else if (data === 'PDF') {
+                  var data = this._dataService.cloneItems(this.items);
+						      this._serviceManagementService.exportPDF(data);
                 }
               }
             }));

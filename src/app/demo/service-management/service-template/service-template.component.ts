@@ -5,6 +5,7 @@ import { ValidationOption, RequiredValidationRule, ClientValidator, ValidationSe
 import { ServiceTemplateService } from './service-template.service';
 import { HttpClient } from '@angular/common/http';
 import { formLabelService, formDescriptionService } from '../../common/language/serviceLanguageEN.model';
+import { serviceAPI } from '../../common/system/api.model';
 
 @Component({
   selector: 'app-service-template',
@@ -16,8 +17,9 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
   @Input() public action: String;
 
   public formLabel: formLabelService = new formLabelService();
+  public serviceAPI = new serviceAPI();
   public formDes: formDescriptionService = new formDescriptionService();
-  public apiUrl = "http://localhost:8001/services";
+  public apiUrl = this.serviceAPI.serviceAPI;
   public data;
 
   constructor(private _validationService: ValidationService, private _serviceTemplateSerivce: ServiceTemplateService, private http: HttpClient) {}
@@ -28,7 +30,7 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
 
   getData(): void {
     this.data = [];
-    this.http.get('http://localhost:8001/services')
+    this.http.get(this.apiUrl)
     .subscribe((res: any) => {
       for (let i = 0; i < res.data.length; i++) {
         if(res.data[i].name === this.item.name) {
@@ -76,15 +78,6 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
               status: this._serviceTemplateSerivce.validateTagSpace(value),
               message: 'Tag can\'t containe whitespace'
           }));
-          })
-        ]
-      }),
-      new ValidationOption({
-        validationName: "Certificate",
-        valueResolver: () => this.item.client_certificate,
-        rules: [
-          new CustomValidationRule((value) => {
-            return this._serviceTemplateSerivce.validateCertificate(value);
           })
         ]
       }),

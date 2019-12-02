@@ -14,7 +14,7 @@ export class ServiceTemplateService{
         const nameregex = /[A-Za-z0-9._-]$/;
         return of(new ValidationRuleResponse({
             status: nameregex.test(name),
-            message: 'Name can\'t contain special charecter'
+            message: 'Name can\'t contain \\ / : * ? \" < > | \''
         }));
     }
 
@@ -49,7 +49,7 @@ export class ServiceTemplateService{
         var tag = tags.filter(x => x && !tagregex.test(x));
         return of(new ValidationRuleResponse({
             status: tag.length < 1,
-            message: 'Tag can\'t contain special character'
+            message: 'Tag can\'t contain \\ / : * ? \" < > | \''
         }))
     }
 
@@ -60,14 +60,6 @@ export class ServiceTemplateService{
         } else {
             return false
         }
-    }
-
-    public validateCertificate(certificate: string): Observable<ValidationRuleResponse> {
-        const cartificateregex = /[A-Za-z0-9-]$/;
-        return of(new ValidationRuleResponse({
-            status: cartificateregex.test(certificate) || certificate === null,
-            message: 'Certificate invalid'
-        }))
     }
 
     public validatePath(path: string): Observable<ValidationRuleResponse> {
