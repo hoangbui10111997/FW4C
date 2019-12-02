@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, of } from 'rxjs';
 import { ValidationRuleResponse } from 'ngx-fw4c';
 import { HttpClient } from '@angular/common/http';
+import { Service } from '../service.model';
 
 @Injectable({
     providedIn: 'root'
@@ -21,6 +22,14 @@ export class ServiceTemplateService{
         var item = data.find(x => x.name == name);
         return of(new ValidationRuleResponse({
             status:!item,
+            message:'Name must be unique'
+        }));
+    }
+
+    public validateInlineNameService(name, data): Observable<ValidationRuleResponse> {
+        var item = data.filter(x => x.name == name);
+        return of(new ValidationRuleResponse({
+            status:(item.length) <= 1,
             message:'Name must be unique'
         }));
     }

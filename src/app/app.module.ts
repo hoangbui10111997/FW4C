@@ -6,10 +6,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DemoModule } from './demo';
 import { HttpClientModule } from '@angular/common/http';
+import { ExportExcelComponent } from './demo/service-management/export-excel/export-excel.component';
+import { IgxExcelExporterService } from 'igniteui-angular'
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ExportExcelComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
   exports: [
     DemoModule
   ],
-  providers: [],
+  providers: [IgxExcelExporterService],
   bootstrap: [AppComponent]
 })
 

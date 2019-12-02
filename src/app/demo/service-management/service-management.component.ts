@@ -7,6 +7,7 @@ import { tableTitleService, tableAction, actionButton, actionTitle, actionMessag
 import { of } from 'rxjs';
 import { ServiceTemplateService } from '../service-management/service-template/service-template.service'
 import { ImportExcelComponent } from './import-excel/import-excel.component';
+import { IgxExcelExporterService, IgxExcelExporterOptions } from 'igniteui-angular';
 
 @Component({
   selector: 'app-service-management',
@@ -26,7 +27,7 @@ export class ServiceManagementComponent implements OnInit {
   public iserror = false;
   public error: string;
 
-  constructor(private _modalService: ModalService, private _serviceManagementService: ServiceManagementService, private _dataService: DataService, private _serviceTemplateService: ServiceTemplateService, private _validationService: ValidationService) {}
+  constructor(private _modalService: ModalService, private _serviceManagementService: ServiceManagementService, private _dataService: DataService, private _serviceTemplateService: ServiceTemplateService, private _validationService: ValidationService, private excelExportService: IgxExcelExporterService) {}
 
   ngOnInit() {
     this.getLocalData();
@@ -87,7 +88,6 @@ export class ServiceManagementComponent implements OnInit {
         {
           icon: "fa fa-save",
           customClass: "warning",
-          lazyload: true,
           hide: () => {
             if(this.tableTemplate.changedRows.length === 0) {
               return true;
@@ -113,10 +113,15 @@ export class ServiceManagementComponent implements OnInit {
           icon: "fa fa-download",
           title: () => this.tableAction.export,
           customClass: 'primary',
-          lazyload: true,
           executeAsync: () => {
-            var clonedItems = this._dataService.cloneItems(this.items);
-            this._serviceManagementService.exportExcel(clonedItems);
+            var data = this._dataService.cloneItems(this.items);
+						for (let index = 0; index < data.length; index++) {
+							const element = data[index];
+              delete element.create;
+              delete element.update;
+							element.tags = element.tags? element.tags.toString():null;
+						}
+						this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_' + Date.now().toString()));
           }
         },
         {
@@ -163,7 +168,22 @@ export class ServiceManagementComponent implements OnInit {
           title: () => this.tableAction.template,
           customClass: 'info',
           executeAsync: () => {
-            this._serviceManagementService.exportTemplate();
+            var data = [];
+            data[0] = {
+              name: '',
+              host: '',
+              tags: '',
+              url: '',
+              port: '',
+              path: '',
+              protocol: '',
+              retries: '',
+              connect_timeout: '',
+              write_timeout: '',
+              read_timeout: '',
+              client_certificate: ''
+            };
+						this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_Template_' + Date.now().toString()));
           }
         }
       ],
@@ -175,7 +195,7 @@ export class ServiceManagementComponent implements OnInit {
               validationKey: 'ServiceTemplateComponent',
               icon: 'fa fa-edit',
               data: {
-                item: item,
+                item: this._dataService.cloneItem(item),
                 action: 'Edit'
               },
               customSize: 'modal-lg',
@@ -299,9 +319,7 @@ export class ServiceManagementComponent implements OnInit {
                 return this._serviceTemplateService.validateName(value);
               }),
               new CustomValidationRule(value => {
-                var item = this.items.filter(x => x.name !== value);
-                debugger
-                return this._serviceTemplateService.validateNameService(value, item);
+                return this._serviceTemplateService.validateInlineNameService(value, this.items);
               }),
             ]
           })
