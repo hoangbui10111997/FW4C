@@ -7,7 +7,8 @@ import { tableTitleService, tableAction, actionButton, actionTitle, actionMessag
 import { of } from 'rxjs';
 import { ServiceTemplateService } from '../service-management/service-template/service-template.service'
 import { ImportExcelComponent } from './import-excel/import-excel.component';
-import { IgxExcelExporterService, IgxExcelExporterOptions } from 'igniteui-angular';
+import { ExportDataComponent } from './export-data/export-data.component';
+
 
 @Component({
   selector: 'app-service-management',
@@ -27,7 +28,7 @@ export class ServiceManagementComponent implements OnInit {
   public iserror = false;
   public error: string;
 
-  constructor(private _modalService: ModalService, private _serviceManagementService: ServiceManagementService, private _dataService: DataService, private _serviceTemplateService: ServiceTemplateService, private _validationService: ValidationService, private excelExportService: IgxExcelExporterService) {}
+  constructor(private _modalService: ModalService, private _serviceManagementService: ServiceManagementService, private _dataService: DataService, private _serviceTemplateService: ServiceTemplateService, private _validationService: ValidationService) {}
 
   ngOnInit() {
     this.getLocalData();
@@ -111,23 +112,30 @@ export class ServiceManagementComponent implements OnInit {
         },
         {
           icon: "fa fa-download",
+          customClass: "info",
           title: () => this.tableAction.export,
-          customClass: 'primary',
-          executeAsync: () => {
-            var data = this._dataService.cloneItems(this.items);
-						for (let index = 0; index < data.length; index++) {
-							const element = data[index];
-              delete element.create;
-              delete element.update;
-							element.tags = element.tags? element.tags.toString():null;
-						}
-						this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_' + Date.now().toString()));
+          executeAsync: (item: Service) => {
+            this._modalService.showTemplateDialog(new TemplateViewModel({
+              validationKey: 'ExportDataComponent',
+              title: this.actionTitle.export,
+              template: ExportDataComponent,
+              btnAcceptTitle: this.actionButton.export,
+              btnCancelTitle: this.actionButton.cancel,
+              acceptCallback: data => {
+                if (data === 'Excel') {
+                  var data = this._dataService.cloneItems(this.items);
+						      this._serviceManagementService.exportExcel(data);
+                } else if (data === 'Template') {
+                  this._serviceManagementService.exportTemplate();
+                }
+              }
+            }));
           }
         },
         {
           icon: "fa fa-upload",
           title: () => this.tableAction.import,
-          customClass: 'primary',
+          customClass: 'info',
           executeAsync: () => {
             this._modalService.showTemplateDialog(new TemplateViewModel({
               template: ImportExcelComponent,
@@ -161,29 +169,6 @@ export class ServiceManagementComponent implements OnInit {
                 }
               }
             }))
-          }
-        },
-        {
-          icon: "fa fa-file",
-          title: () => this.tableAction.template,
-          customClass: 'info',
-          executeAsync: () => {
-            var data = [];
-            data[0] = {
-              name: '',
-              host: '',
-              tags: '',
-              url: '',
-              port: '',
-              path: '',
-              protocol: '',
-              retries: '',
-              connect_timeout: '',
-              write_timeout: '',
-              read_timeout: '',
-              client_certificate: ''
-            };
-						this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_Template_' + Date.now().toString()));
           }
         }
       ],

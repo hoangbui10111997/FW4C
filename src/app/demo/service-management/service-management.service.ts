@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import * as FileSaver from 'file-saver';  
-import * as XLSX from 'xlsx'; 
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { IgxExcelExporterService, IgxExcelExporterOptions } from 'igniteui-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +10,7 @@ import { Observable, of } from 'rxjs';
 export class ServiceManagementService {
   public apiUrl = 'http://localhost:8001/services';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private excelExportService: IgxExcelExporterService) {}
 
   public search(size: number = 999): Observable<any[]> {
     return this.http.get(`http://localhost:8001/services?size=${size}`)
@@ -64,5 +63,34 @@ export class ServiceManagementService {
     delete item.update;
     delete item.id;
     return this.http.post(this.apiUrl, item);
+  }
+
+  public exportExcel(data) {
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index];
+      delete element.create;
+      delete element.update;
+      element.tags = element.tags? element.tags.toString():null;
+    }
+    this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_' + Date.now().toString()));
+  }
+
+  public exportTemplate() {
+    var data = [];
+    data[0] = {
+      name: '',
+      host: '',
+      tags: '',
+      url: '',
+      port: '',
+      path: '',
+      protocol: '',
+      retries: '',
+      connect_timeout: '',
+      write_timeout: '',
+      read_timeout: '',
+      client_certificate: ''
+    };
+    this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_Template_' + Date.now().toString()));
   }
 }

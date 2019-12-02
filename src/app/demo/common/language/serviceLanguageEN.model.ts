@@ -118,6 +118,8 @@ export class actionButton {
     no: string;
     refresh: string;
     delete: string;
+    import: string;
+    export: string;
 
     constructor() {
         this.new = 'New';
@@ -126,7 +128,9 @@ export class actionButton {
         this.cancel = 'Cancel';
         this.no = 'No';
         this.yes = 'Yes';
-        this.delete = 'Delete'
+        this.delete = 'Delete';
+        this.export = 'Export';
+        this.import = 'Import';
     }
 }
 
@@ -134,6 +138,8 @@ export class actionTitle {
     addService: string;
     delete: string;
     import: string;
+    export: string;
+
     editService(name): string {
         return 'Edit ' + name + ' service';
     }
@@ -142,6 +148,7 @@ export class actionTitle {
         this.addService = 'ADD NEW SERVICE';
         this.delete = 'DELETE';
         this.import = 'IMPORT SERVICE';
+        this.export = 'EXPORT SERVICE'
     }
 }
 

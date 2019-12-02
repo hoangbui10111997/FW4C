@@ -7,12 +7,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ServiceManagementComponent } from './service-management/service-management.component';
 import { ServiceTemplateComponent } from './service-management/service-template/service-template.component';
 import { ImportExcelComponent } from './service-management/import-excel/import-excel.component';
+import { ExportDataComponent } from './service-management/export-data/export-data.component';
 
 const declarations = [
   DashboardDemoComponent,
   ServiceManagementComponent,
   ServiceTemplateComponent,
-  ImportExcelComponent
+  ImportExcelComponent,
+  ExportDataComponent
 ];
 
 @NgModule({
