@@ -120,6 +120,8 @@ export class actionButton {
     delete: string;
     import: string;
     export: string;
+    create: string;
+    accept: string;
 
     constructor() {
         this.new = 'New';
@@ -131,6 +133,8 @@ export class actionButton {
         this.delete = 'Delete';
         this.export = 'Export';
         this.import = 'Import';
+        this.create = 'Create';
+        this.accept = 'Accept';
     }
 }
 

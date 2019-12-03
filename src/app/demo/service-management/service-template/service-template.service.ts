@@ -44,6 +44,13 @@ export class ServiceTemplateService{
         }))
     }
 
+    public validateHostEnd(host: string): Observable<ValidationRuleResponse> {
+        return of(new ValidationRuleResponse({
+            status: !(host.endsWith('-')),
+            message: 'Host invalid'
+        }))
+    }
+
     public validateTag(tags: string[]): Observable<ValidationRuleResponse> {
         const tagregex = /[A-Za-z0-9._-]$/;
         var tag = tags.filter(x => x && !tagregex.test(x));

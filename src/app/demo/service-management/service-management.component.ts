@@ -70,7 +70,7 @@ export class ServiceManagementComponent implements OnInit {
                 action: 'New'
               },
               template: ServiceTemplateComponent,
-              btnAcceptTitle: this.actionButton.new,
+              btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: (response: any, close, provider: any) => {
                 this._serviceManagementService.createService(provider.item)
@@ -120,7 +120,7 @@ export class ServiceManagementComponent implements OnInit {
               validationKey: 'ExportDataComponent',
               title: this.actionTitle.export,
               template: ExportDataComponent,
-              btnAcceptTitle: this.actionButton.export,
+              btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: data => {
                 if (data === 'Excel') {
@@ -190,7 +190,7 @@ export class ServiceManagementComponent implements OnInit {
               customSize: 'modal-lg',
               template: ServiceTemplateComponent,
               title: this.actionTitle.editService(item.name),
-              btnAcceptTitle: this.actionButton.edit,
+              btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: (response: any, close, provider: any) => {
                   this._serviceManagementService.updateService(provider.item)
@@ -212,24 +212,6 @@ export class ServiceManagementComponent implements OnInit {
           }
         },
         {
-          icon: "fa fa-remove",
-          executeAsync: (item) => {
-            this._modalService.showConfirmDialog(new ConfirmViewModel({
-              title: this.actionTitle.delete,
-              message: this.actionMessage.deleteService(item.name),
-              btnAcceptTitle: this.actionButton.yes,
-              btnCancelTitle: this.actionButton.no,
-              acceptCallback: () => {
-                this._serviceManagementService.deleteService(item)
-                .subscribe(()=>{
-                  this.getLocalData();
-                  this.tableTemplate.reload();
-                });
-              }
-            }))
-          }
-        },
-        {
           icon: "fa fa-copy",
           executeAsync: (item) => {
             var copyItem = this._dataService.cloneItem(item);
@@ -243,25 +225,19 @@ export class ServiceManagementComponent implements OnInit {
           }
         },
         {
-          type: TableConstant.ActionType.Toolbar,
-          customClass: 'danger',
-          icon: "fa fa-trash-o",
-          title: () => this.tableAction.delete,
-          executeAsync: (item, e, provider: TableComponent) => {
+          icon: "fa fa-remove",
+          executeAsync: (item) => {
             this._modalService.showConfirmDialog(new ConfirmViewModel({
               title: this.actionTitle.delete,
-              message: this.actionMessage.deleteListService,
-              btnAcceptTitle: this.actionButton.yes,
-              btnCancelTitle: this.actionButton.no,
+              message: this.actionMessage.deleteService(item.name),
+              btnAcceptTitle: this.actionButton.accept,
+              btnCancelTitle: this.actionButton.cancel,
               acceptCallback: () => {
-                for(let i=0; i < provider.selectedItems.length; i++){
-                  this._serviceManagementService.deleteService(provider.selectedItems[i]).subscribe(() => {
-                    if(i === (provider.selectedItems.length - 1)) {
-                      this.getLocalData();
-                      this.tableTemplate.reload();
-                    }
-                  });
-                }
+                this._serviceManagementService.deleteService(item)
+                .subscribe(()=>{
+                  this.getLocalData();
+                  this.tableTemplate.reload();
+                });
               }
             }))
           }
@@ -285,6 +261,30 @@ export class ServiceManagementComponent implements OnInit {
                 }
               });
             }
+          }
+        },
+        {
+          type: TableConstant.ActionType.Toolbar,
+          customClass: 'danger',
+          icon: "fa fa-trash-o",
+          title: () => this.tableAction.delete,
+          executeAsync: (item, e, provider: TableComponent) => {
+            this._modalService.showConfirmDialog(new ConfirmViewModel({
+              title: this.actionTitle.delete,
+              message: this.actionMessage.deleteListService,
+              btnAcceptTitle: this.actionButton.accept,
+              btnCancelTitle: this.actionButton.cancel,
+              acceptCallback: () => {
+                for(let i=0; i < provider.selectedItems.length; i++){
+                  this._serviceManagementService.deleteService(provider.selectedItems[i]).subscribe(() => {
+                    if(i === (provider.selectedItems.length - 1)) {
+                      this.getLocalData();
+                      this.tableTemplate.reload();
+                    }
+                  });
+                }
+              }
+            }))
           }
         },
         {
@@ -324,6 +324,9 @@ export class ServiceManagementComponent implements OnInit {
               new RequiredValidationRule(),
               new CustomValidationRule(value => {
                 return this._serviceTemplateService.validateHost(value);
+              }),
+              new CustomValidationRule((value) => {
+                return this._serviceTemplateService.validateHostEnd(value);
               })
             ]
           })

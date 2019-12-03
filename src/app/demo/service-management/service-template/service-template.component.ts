@@ -61,6 +61,9 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
           new RequiredValidationRule(),
           new CustomValidationRule((value) => {
             return this._serviceTemplateSerivce.validateHost(value);
+          }),
+          new CustomValidationRule((value) => {
+            return this._serviceTemplateSerivce.validateHostEnd(value);
           })
         ]
       }),
