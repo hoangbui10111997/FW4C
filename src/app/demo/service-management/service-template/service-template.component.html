@@ -1,4 +1,4 @@
-<katana-card>
+<!-- <katana-card>
     <div #formRef>
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">{{formLabel.name}} <small style="color: red">({{formLabel.required}})</small></label>
@@ -81,10 +81,22 @@
           </div>
         </div>
     </div>
-  </katana-card>
+  </katana-card> -->
 
-<!-- <katana-form [column]="2">
-    <katana-textbox [title]="'Name'" *katana-item></katana-textbox>
-    <katana-textbox [title]="'Name'" *katana-item></katana-textbox>
-    <katana-textbox [title]="'Name'" *katana-item></katana-textbox>
-</katana-form> -->
+<katana-card>
+  <div #formRef>
+    <katana-form [column]="2">
+      <katana-textbox [title]="formLabel.name" [(model)]="item.name" [validationName]="Name" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.host" [(model)]="item.host" [validationName]="Host" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.path" [(model)]="item.path" [validationName]="Path" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.protocol" [(model)]="item.protocol" [validationName]="Protocol" *katana-item></katana-textbox>
+      <katana-chips [title]="formLabel.tags" validation-name="Tags" [(model)]="item.tags" *katana-item></katana-chips>>
+      <katana-textbox [title]="formLabel.port" [(model)]="item.port" [validationName]="Port" [type]="'number'"*katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.retries" [(model)]="item.retries" [type]="'number'" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.connect_timeout" [(model)]="item.connect_timeout" [type]="'number'" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.write_timeout" [(model)]="item.write_timeout" [type]="'number'" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.read_timeout" [(model)]="item.read_timeout" [type]="'number'"*katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.client_certificate" [(model)]="item.client_certificate" *katana-item></katana-textbox>
+    </katana-form>
+  </div>
+</katana-card>

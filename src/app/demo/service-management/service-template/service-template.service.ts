@@ -53,13 +53,10 @@ export class ServiceTemplateService{
         }))
     }
 
-    public validateTagSpace(tags: string): any {
-        var tag = tags[tags.length - 1];
-        if ((tag.indexOf(' ')) === -1) {
-            return true
-        } else {
-            return false
-        }
+    public validateTagSpace(tags: string[]): any {
+        var tag = tags.find(x=>x.indexOf(' ') != -1); 
+        if(tag) return false;
+        else return true;
     }
 
     public validatePath(path: string): Observable<ValidationRuleResponse> {

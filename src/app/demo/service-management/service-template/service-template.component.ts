@@ -4,8 +4,7 @@ import { Service } from '../service.model';
 import { ValidationOption, RequiredValidationRule, ClientValidator, ValidationService, CustomValidationRule, ValidationRuleResponse  } from 'ngx-fw4c';
 import { ServiceTemplateService } from './service-template.service';
 import { HttpClient } from '@angular/common/http';
-import { formLabelService, formDescriptionService } from '../../common/language/serviceLanguageEN.model';
-import { serviceAPI } from '../../common/system/api.model';
+import { formLabelService, formDescriptionService } from '../common/language/serviceLanguageEN.model';
 
 @Component({
   selector: 'app-service-template',
@@ -17,9 +16,8 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
   @Input() public action: String;
 
   public formLabel: formLabelService = new formLabelService();
-  public serviceAPI = new serviceAPI();
   public formDes: formDescriptionService = new formDescriptionService();
-  public apiUrl = this.serviceAPI.serviceAPI;
+  public apiUrl = 'http://localhost:8001/services'
   public data;
 
   constructor(private _validationService: ValidationService, private _serviceTemplateSerivce: ServiceTemplateService, private http: HttpClient) {}

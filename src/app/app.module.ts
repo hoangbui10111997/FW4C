@@ -4,7 +4,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DemoModule } from './demo';
+// import { DemoModule } from './demo';
+import { ServiceModule } from './demo/service-management/service.modules'
 import { HttpClientModule } from '@angular/common/http';
 import { IgxExcelExporterService } from 'igniteui-angular'
 
@@ -18,11 +19,11 @@ import { IgxExcelExporterService } from 'igniteui-angular'
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    DemoModule,
+    ServiceModule,
     HttpClientModule
   ],
   exports: [
-    DemoModule
+    ServiceModule
   ],
   providers: [IgxExcelExporterService],
   bootstrap: [AppComponent]

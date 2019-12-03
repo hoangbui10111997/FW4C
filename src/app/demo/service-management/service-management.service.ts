@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { IgxExcelExporterService, IgxExcelExporterOptions } from 'igniteui-angular';
-import { serviceAPI } from '../common/system/api.model';
 import  * as pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -11,8 +10,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
   providedIn: 'root'
 })
 export class ServiceManagementService {
-  public serviceAPI = new serviceAPI();
-  public apiUrl = this.serviceAPI.serviceAPI;
+  public apiUrl = 'http://localhost:8001/services';
 
   constructor(private http: HttpClient, private excelExportService: IgxExcelExporterService) {}
 
@@ -26,7 +24,7 @@ export class ServiceManagementService {
       return res.data;
     }));
   }
-
+  
   public deleteService(item) {
     return this.http.delete(this.apiUrl + '/' + item.id);
   }

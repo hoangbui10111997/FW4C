@@ -3,7 +3,7 @@ import {TableOption, ModalService, TemplateViewModel, TableComponent, ConfirmVie
 import { ServiceManagementService } from './service-management.service';
 import { ServiceTemplateComponent } from './service-template/service-template.component'
 import { Service } from './service.model';
-import { tableTitleService, tableAction, actionButton, actionTitle, actionMessageService } from '../common/language/serviceLanguageEN.model';
+import { tableTitleService, tableAction, actionButton, actionTitle, actionMessageService } from './common/language/serviceLanguageEN.model';
 import { of } from 'rxjs';
 import { ServiceTemplateService } from '../service-management/service-template/service-template.service'
 import { ImportExcelComponent } from './import-excel/import-excel.component';
@@ -61,6 +61,7 @@ export class ServiceManagementComponent implements OnInit {
           title: () => this.tableAction.new,
           executeAsync: (item: Service) => {
             this._modalService.showTemplateDialog(new TemplateViewModel({
+              icon: "fa fa-plus",
               validationKey: 'ServiceTemplateComponent',
               customSize: 'modal-lg',
               title: this.actionTitle.addService,
