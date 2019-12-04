@@ -113,9 +113,9 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
     this.item.port = 80;
     this.item.retries = 5;
     this.item.protocol = 'http';
-    this.item.connect_timeout = 60000;
-    this.item.write_timeout = 60000;
-    this.item.read_timeout = 60000;
+    this.item.connectTimeout = 60000;
+    this.item.writeTimeout = 60000;
+    this.item.readTimeout = 60000;
   }
   isValid(): boolean {
     return this._validationService.isValid(true, false);

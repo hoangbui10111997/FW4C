@@ -1,18 +1,42 @@
 import { BaseRequest, BaseResponse, SearchBaseRequest, SearchBaseResponse } from 'ngx-fw4c';
 
-export class Service {
+export class KongService {
+    id: string;
     name: string;
     host: string;
     tags: string[];
     url: string;
     port: number;
     path: string;
+    created_at: number;
+    updated_at: number;
     protocol: string;
     retries: number;
     connect_timeout: number;
     write_timeout: number;
     read_timeout: number;
     client_certificate: string;
+    constructor(init?: Partial<Service>) {
+        Object.assign(this, init);
+    }
+}
+
+export class Service {
+    id: string;
+    name: string;
+    host: string;
+    tags: string[];
+    url: string;
+    port: number;
+    path: string;
+    createdAt: number;
+    updatedAt: number;
+    protocol: string;
+    retries: number;
+    connectTimeout: number;
+    writeTimeout: number;
+    readTimeout: number;
+    clientCertificate: string;
     constructor(init?: Partial<Service>) {
         Object.assign(this, init);
     }

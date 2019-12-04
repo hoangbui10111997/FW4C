@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { IgxExcelExporterService, IgxExcelExporterOptions } from 'igniteui-angular';
 import  * as pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { ServiceSearchRequest, ServiceSearchResponse } from './service.model';
+import { ServiceSearchRequest, ServiceSearchResponse, Service, KongService } from './service.model';
 import { Observable } from 'rxjs';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -17,42 +17,37 @@ export class ServiceManagementService {
   constructor(private http: HttpClient, private excelExportService: IgxExcelExporterService) {}
 
   public search(request: ServiceSearchRequest): Observable<ServiceSearchResponse> {
+    var items = [];
     return this.http.get<any>(this.apiUrl+'?size=999', { params: request as any }).pipe(map(s => 
       {
-        var item
         for (let i = 0; i < s.data.length; i++) {
-          s.data[i].create = s.data[i].created_at * 1000;
-          s.data[i].update = s.data[i].updated_at * 1000;
+          items.push(this.mapData(s.data[i]));
         }
         var response = {
           status: true,
           totalRecords: s.data.length,
-          items: s.data,
+          items: items
         };
         return response;
       }
       ));
   }
   
-  public deleteService(item) {
+  public deleteService(item: Service) {
     return this.http.delete(this.apiUrl + '/' + item.id);
   }
 
-  public updateService(item) {
-    delete item.create;
-    delete item.update;
-    return this.http.patch(this.apiUrl + '/' + item.id, item);
+  public updateService(item: Service) {
+    return this.http.patch(this.apiUrl + '/' + item.id, this.mapData(item, true));
   }
 
-  public createService(body: any): Observable<any> {
-    return this.http.post(this.apiUrl, body);
-  }
-
-  public copyService(item) {
-    delete item.create;
-    delete item.update;
-    delete item.id;
+  public createService(item: Service): Observable<any> {
     return this.http.post(this.apiUrl, item);
+  }
+
+  public copyService(item: Service) {
+    delete item.id;
+    return this.http.post(this.apiUrl, this.mapData(item, true));
   }
 
   public exportExcel(data) {
@@ -124,4 +119,43 @@ export class ServiceManagementService {
     pdfMake.createPdf(docDefinition).download('Service_Template_' + Date.now().toString());
   }
 
+  private mapData(data?: any, reversed?: boolean) {
+    var item: Service = new Service();
+    var kongItem: KongService = new KongService();
+    if(reversed) {
+      kongItem.id = data.id;
+      kongItem.name = data.name;
+      kongItem.host = data.host;
+      kongItem.tags = data.tags;
+      kongItem.url = data.url;
+      kongItem.port = data.port;
+      kongItem.path = data.path;
+      kongItem.created_at = data.createdAt / 1000;
+      kongItem.updated_at = data.updatedAt / 1000;
+      kongItem.protocol = data.protocol;
+      kongItem.retries = data.retries;
+      kongItem.connect_timeout = data.connectTimeout;
+      kongItem.write_timeout = data.writeTimeout;
+      kongItem.read_timeout = data.readTimeout;
+      kongItem.client_certificate = data.clientCertificate;
+      return kongItem;
+    } else {
+      item.id = data.id;
+      item.name = data.name;
+      item.host = data.host;
+      item.tags = data.tags;
+      item.url = data.url;
+      item.port = data.port;
+      item.path = data.path;
+      item.createdAt = data.created_at * 1000;
+      item.updatedAt = data.updated_at * 1000;
+      item.protocol = data.protocol;
+      item.retries = data.retries;
+      item.connectTimeout = data.connect_timeout;
+      item.writeTimeout = data.write_timeout;
+      item.readTimeout = data.read_timeout;
+      item.clientCertificate = data.client_certificate;
+      return item;
+    }
+  }
 }

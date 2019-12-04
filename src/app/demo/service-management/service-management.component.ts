@@ -35,7 +35,6 @@ export class ServiceManagementComponent implements OnInit {
   }
 
   private initTable() {
-    
     this.option = new TableOption({
       localData: () => {
         return this._serviceManagementService.search(new ServiceRequest()).pipe(map(s => s.items));
@@ -139,16 +138,16 @@ export class ServiceManagementComponent implements OnInit {
                   var element: Service = new Service();
                   element.name = item.name;
                   element.host = item.host;
-                  element.client_certificate = item.client_certificate;
-                  element.connect_timeout = item.connect_timeout;
+                  element.clientCertificate = item.clientCertificate;
+                  element.connectTimeout = item.connectTimeout;
                   element.path = item.path;
                   element.port = item.port;
                   element.protocol = item.protocol;
-                  element.read_timeout = item.read_timeout;
+                  element.readTimeout = item.readTimeout;
                   element.retries = item.retries;
                   element.tags = item.tags? item.tags.split(','):[];
                   element.url = item.url;
-                  element.write_timeout = item.write_timeout;
+                  element.writeTimeout = item.writeTimeout;
                   this._serviceManagementService.createService(element)
                   .subscribe(() => {
                     if (i === (items.length - 1))
@@ -348,14 +347,14 @@ export class ServiceManagementComponent implements OnInit {
         {
           type: TableColumnType.DateTime,
           title: () => this.tableTitle.time_create,
-          valueRef: () => "create",
+          valueRef: () => "createdAt",
           width: 180,
           allowFilter: false
         },
         {
           type: TableColumnType.DateTime,
           title: () => this.tableTitle.time_update,
-          valueRef: () => "update",
+          valueRef: () => "updatedAt",
           width: 180,
           allowFilter: false
         }
