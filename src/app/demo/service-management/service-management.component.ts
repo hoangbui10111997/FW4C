@@ -2,12 +2,13 @@ import {Component, ViewChild, ElementRef, OnInit} from "@angular/core";
 import {TableOption, ModalService, TemplateViewModel, TableComponent, ConfirmViewModel, TableMode, TableColumnType, TableAction, TableConstant, DataService, ValidationRule, ValidationOption, CustomValidationRule, ValidationService, RequiredValidationRule} from "ngx-fw4c";
 import { ServiceManagementService } from './service-management.service';
 import { ServiceTemplateComponent } from './service-template/service-template.component'
-import { Service } from './service.model';
+import { Service, ServiceRequest } from './service.model';
 import { tableTitleService, tableAction, actionButton, actionTitle, actionMessageService } from './common/language/serviceLanguageEN.model';
 import { of } from 'rxjs';
 import { ServiceTemplateService } from '../service-management/service-template/service-template.service'
 import { ImportExcelComponent } from './import-excel/import-excel.component';
 import { ExportDataComponent } from './export-data/export-data.component';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -24,31 +25,20 @@ export class ServiceManagementComponent implements OnInit {
   public actionButton: actionButton = new actionButton();
   public actionTitle: actionTitle = new actionTitle();
   public actionMessage: actionMessageService = new actionMessageService();
-  public items = [];
   public iserror = false;
   public error: string;
 
   constructor(private _modalService: ModalService, private _serviceManagementService: ServiceManagementService, private _dataService: DataService, private _serviceTemplateService: ServiceTemplateService, private _validationService: ValidationService) {}
 
   ngOnInit() {
-    this.getLocalData();
     this.initTable();
-  }
-
-  private getLocalData() {
-    this.items = [];
-    this._serviceManagementService.getListServiceLocal()
-    .subscribe(response => {
-      this.items = response;
-      this.tableTemplate.reload();
-    });
   }
 
   private initTable() {
     
     this.option = new TableOption({
       localData: () => {
-        return of(this.items);
+        return this._serviceManagementService.search(new ServiceRequest()).pipe(map(s => s.items));
       },
 
       inlineEdit: true,
@@ -75,13 +65,11 @@ export class ServiceManagementComponent implements OnInit {
               acceptCallback: (response: any, close, provider: any) => {
                 this._serviceManagementService.createService(provider.item)
                 .subscribe(() => {
-                  this.getLocalData();
                   this.tableTemplate.reload();
                 }, error => {
                   this.iserror = true;
                   this.error = error.error.message;
                   setTimeout(() => this.iserror = false, 5000);
-                  this.getLocalData();
                 });
               }
             }));
@@ -103,7 +91,6 @@ export class ServiceManagementComponent implements OnInit {
               this._serviceManagementService.updateService(this.tableTemplate.changedRows[i].currentItem)
               .subscribe(() => {
                 if (i === (this.tableTemplate.changedRows.length - 1)) {
-                  this.getLocalData();
                   this.tableTemplate.reload();
                   this.tableTemplate.changedRows = [];
                 }
@@ -124,12 +111,12 @@ export class ServiceManagementComponent implements OnInit {
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: data => {
                 if (data === 'Excel') {
-                  var data = this._dataService.cloneItems(this.items);
+                  var data = this._dataService.cloneItems(this.tableTemplate.items);
 						      this._serviceManagementService.exportExcel(data);
                 } else if (data === 'Template') {
                   this._serviceManagementService.exportTemplate();
                 } else if (data === 'PDF') {
-                  var data = this._dataService.cloneItems(this.items);
+                  var data = this._dataService.cloneItems(this.tableTemplate.items);
 						      this._serviceManagementService.exportPDF(data);
                 }
               }
@@ -166,7 +153,6 @@ export class ServiceManagementComponent implements OnInit {
                   .subscribe(() => {
                     if (i === (items.length - 1))
                     {
-                      this.getLocalData;
                       this.tableTemplate.reload();
                     }
                   })
@@ -195,17 +181,14 @@ export class ServiceManagementComponent implements OnInit {
               acceptCallback: (response: any, close, provider: any) => {
                   this._serviceManagementService.updateService(provider.item)
                   .subscribe(() => {
-                    this.getLocalData();
                     this.tableTemplate.reload();
                   }, error => {
-                    this.getLocalData();
                     this.iserror = true;
                     this.error = error.error.message;
                     setTimeout(() => this.iserror = false, 5000);
                   })
               },
               cancelCallback: () => {
-                this.getLocalData();
                 this.tableTemplate.reload();
               }
             }))
@@ -215,11 +198,10 @@ export class ServiceManagementComponent implements OnInit {
           icon: "fa fa-copy",
           executeAsync: (item) => {
             var copyItem = this._dataService.cloneItem(item);
-            var check = this.items.filter(x=>x.name.includes(copyItem.name+'copy'));
+            var check = this.tableTemplate.items.filter(x=>x.name.includes(copyItem.name+'copy'));
             copyItem.name=copyItem.name+'copy'+(check.length+1);
             this._serviceManagementService.copyService(copyItem)
             .subscribe(() => {
-              this.getLocalData();
               this.tableTemplate.reload();
             });
           }
@@ -235,7 +217,6 @@ export class ServiceManagementComponent implements OnInit {
               acceptCallback: () => {
                 this._serviceManagementService.deleteService(item)
                 .subscribe(()=>{
-                  this.getLocalData();
                   this.tableTemplate.reload();
                 });
               }
@@ -251,12 +232,11 @@ export class ServiceManagementComponent implements OnInit {
             var copyItems = this._dataService.cloneItems(provider.selectedItems);
             for(let i = 0; i < copyItems.length; i++) {
               var item = copyItems[i];
-              var check = item.name && this.items.filter(x=>x.name.includes(item.name+'_copy') && x.name.length >= item.name.length + 5 && x.name.length <= item.name.length + 8);
+              var check = item.name && this.tableTemplate.items.filter(x=>x.name.includes(item.name+'_copy') && x.name.length >= item.name.length + 5 && x.name.length <= item.name.length + 8);
               item.name=item.name+'_copy'+(check.length+1);
               this._serviceManagementService.copyService(item)
               .subscribe(() => {
                 if(i === (copyItems.length - 1)) {
-                  this.getLocalData();
                   this.tableTemplate.reload();
                 }
               });
@@ -278,7 +258,6 @@ export class ServiceManagementComponent implements OnInit {
                 for(let i=0; i < provider.selectedItems.length; i++){
                   this._serviceManagementService.deleteService(provider.selectedItems[i]).subscribe(() => {
                     if(i === (provider.selectedItems.length - 1)) {
-                      this.getLocalData();
                       this.tableTemplate.reload();
                     }
                   });
@@ -308,7 +287,7 @@ export class ServiceManagementComponent implements OnInit {
                 return this._serviceTemplateService.validateName(value);
               }),
               new CustomValidationRule(value => {
-                return this._serviceTemplateService.validateInlineNameService(value, this.items);
+                return this._serviceTemplateService.validateInlineNameService(value, this.tableTemplate.items);
               }),
             ]
           })

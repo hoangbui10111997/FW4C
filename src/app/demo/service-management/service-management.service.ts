@@ -4,6 +4,8 @@ import { map } from 'rxjs/operators';
 import { IgxExcelExporterService, IgxExcelExporterOptions } from 'igniteui-angular';
 import  * as pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { ServiceSearchRequest, ServiceSearchResponse } from './service.model';
+import { Observable } from 'rxjs';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Injectable({
@@ -14,15 +16,22 @@ export class ServiceManagementService {
 
   constructor(private http: HttpClient, private excelExportService: IgxExcelExporterService) {}
 
-  public getListServiceLocal() {
-    return this.http.get(this.apiUrl+'?size=999').pipe(map((res: any) => {
-      for(let i=0; i < res.data.length; i++)
+  public search(request: ServiceSearchRequest): Observable<ServiceSearchResponse> {
+    return this.http.get<any>(this.apiUrl+'?size=999', { params: request as any }).pipe(map(s => 
       {
-        res.data[i].update = res.data[i].updated_at * 1000;
-        res.data[i].create = res.data[i].created_at * 1000;
+        var item
+        for (let i = 0; i < s.data.length; i++) {
+          s.data[i].create = s.data[i].created_at * 1000;
+          s.data[i].update = s.data[i].updated_at * 1000;
+        }
+        var response = {
+          status: true,
+          totalRecords: s.data.length,
+          items: s.data,
+        };
+        return response;
       }
-      return res.data;
-    }));
+      ));
   }
   
   public deleteService(item) {
@@ -35,8 +44,8 @@ export class ServiceManagementService {
     return this.http.patch(this.apiUrl + '/' + item.id, item);
   }
 
-  public createService(item) {
-    return this.http.post(this.apiUrl, item);
+  public createService(body: any): Observable<any> {
+    return this.http.post(this.apiUrl, body);
   }
 
   public copyService(item) {
