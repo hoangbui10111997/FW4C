@@ -2,7 +2,7 @@ import {Component, ViewChild, ElementRef, OnInit} from "@angular/core";
 import {TableOption, ModalService, TemplateViewModel, TableComponent, ConfirmViewModel, TableMode, TableColumnType, TableAction, TableConstant, DataService, ValidationRule, ValidationOption, CustomValidationRule, ValidationService, RequiredValidationRule} from "ngx-fw4c";
 import { ServiceManagementService } from './service-management.service';
 import { ServiceTemplateComponent } from './service-template/service-template.component'
-import { Service, ServiceRequest } from './service.model';
+import { Service, ServiceRequest, ServiceDeleteRequest, ServiceUpdateRequest, ServiceCreateRequest } from './service.model';
 import { tableTitleService, tableAction, actionButton, actionTitle, actionMessageService } from './common/language/serviceLanguageEN.model';
 import { of } from 'rxjs';
 import { ServiceTemplateService } from '../service-management/service-template/service-template.service'
@@ -62,7 +62,7 @@ export class ServiceManagementComponent implements OnInit {
               btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: (response: any, close, provider: any) => {
-                this._serviceManagementService.createService(provider.item)
+                this._serviceManagementService.createService(provider.item, new ServiceCreateRequest())
                 .subscribe(() => {
                   this.tableTemplate.reload();
                 }, error => {
@@ -87,11 +87,11 @@ export class ServiceManagementComponent implements OnInit {
           title: () => this.tableAction.save,
           executeAsync: () => {
             for(let i = 0; i < this.tableTemplate.changedRows.length; i++) {
-              this._serviceManagementService.updateService(this.tableTemplate.changedRows[i].currentItem)
+              this._serviceManagementService.updateService(this.tableTemplate.changedRows[i].currentItem, new ServiceUpdateRequest({}))
               .subscribe(() => {
                 if (i === (this.tableTemplate.changedRows.length - 1)) {
-                  this.tableTemplate.reload();
                   this.tableTemplate.changedRows = [];
+                  this.tableTemplate.reload();
                 }
               });
             }
@@ -110,8 +110,9 @@ export class ServiceManagementComponent implements OnInit {
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: data => {
                 if (data === 'Excel') {
-                  var data = this._dataService.cloneItems(this.tableTemplate.items);
-						      this._serviceManagementService.exportExcel(data);
+                  // var data = this._dataService.cloneItems(this.tableTemplate.items);
+                  // this._serviceManagementService.exportExcel(data);
+                  this.tableTemplate.exportToExcel('Service_' + Date.now().toString());
                 } else if (data === 'Template') {
                   this._serviceManagementService.exportTemplate();
                 } else if (data === 'PDF') {
@@ -134,26 +135,9 @@ export class ServiceManagementComponent implements OnInit {
               validationKey: 'ImportExcelComponent',
               acceptCallback: items => {
                 for(let i = 0; i < items.length; i++) {
-                  const item = items[i];
-                  var element: Service = new Service();
-                  element.name = item.name;
-                  element.host = item.host;
-                  element.clientCertificate = item.clientCertificate;
-                  element.connectTimeout = item.connectTimeout;
-                  element.path = item.path;
-                  element.port = item.port;
-                  element.protocol = item.protocol;
-                  element.readTimeout = item.readTimeout;
-                  element.retries = item.retries;
-                  element.tags = item.tags? item.tags.split(','):[];
-                  element.url = item.url;
-                  element.writeTimeout = item.writeTimeout;
-                  this._serviceManagementService.createService(element)
+                  this._serviceManagementService.createService(items[i], new ServiceCreateRequest())
                   .subscribe(() => {
-                    if (i === (items.length - 1))
-                    {
-                      this.tableTemplate.reload();
-                    }
+                    this.tableTemplate.reload();
                   })
                 }
               }
@@ -164,6 +148,7 @@ export class ServiceManagementComponent implements OnInit {
       actions: [
         {
           icon: "fa fa-edit",
+          customClass: "default",
           executeAsync: (item) => {
             this._modalService.showTemplateDialog(new TemplateViewModel({
               validationKey: 'ServiceTemplateComponent',
@@ -178,7 +163,7 @@ export class ServiceManagementComponent implements OnInit {
               btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: (response: any, close, provider: any) => {
-                  this._serviceManagementService.updateService(provider.item)
+                  this._serviceManagementService.updateService(provider.item, new ServiceUpdateRequest({}))
                   .subscribe(() => {
                     this.tableTemplate.reload();
                   }, error => {
@@ -195,6 +180,7 @@ export class ServiceManagementComponent implements OnInit {
         },
         {
           icon: "fa fa-copy",
+          customClass: "success",
           executeAsync: (item) => {
             var copyItem = this._dataService.cloneItem(item);
             var check = this.tableTemplate.items.filter(x=>x.name.includes(copyItem.name+'copy'));
@@ -207,6 +193,7 @@ export class ServiceManagementComponent implements OnInit {
         },
         {
           icon: "fa fa-remove",
+          customClass: "danger",
           executeAsync: (item) => {
             this._modalService.showConfirmDialog(new ConfirmViewModel({
               title: this.actionTitle.delete,
@@ -214,7 +201,7 @@ export class ServiceManagementComponent implements OnInit {
               btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: () => {
-                this._serviceManagementService.deleteService(item)
+                this._serviceManagementService.deleteService(item, new ServiceDeleteRequest())
                 .subscribe(()=>{
                   this.tableTemplate.reload();
                 });
@@ -255,10 +242,8 @@ export class ServiceManagementComponent implements OnInit {
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: () => {
                 for(let i=0; i < provider.selectedItems.length; i++){
-                  this._serviceManagementService.deleteService(provider.selectedItems[i]).subscribe(() => {
-                    if(i === (provider.selectedItems.length - 1)) {
-                      this.tableTemplate.reload();
-                    }
+                  this._serviceManagementService.deleteService(provider.selectedItems[i], new ServiceDeleteRequest()).subscribe(() => {
+                    this.tableTemplate.reload();
                   });
                 }
               }
@@ -269,7 +254,18 @@ export class ServiceManagementComponent implements OnInit {
           type: TableConstant.ActionType.Toolbar,
           icon: "fa fa-save",
           title: () => this.tableAction.save,
-          customClass: "warning"
+          customClass: "warning",
+          executeAsync: () => {
+            for(let i=0; i < this.tableTemplate.selectedItems.length; i++) {
+              var search = this.tableTemplate.changedRows.find(x => x.currentItem.id === this.tableTemplate.selectedItems[i].id);
+              if (search) {
+                this._serviceManagementService.updateService(this.tableTemplate.selectedItems[i], new ServiceUpdateRequest({}))
+                .subscribe(() => {
+                  this.tableTemplate.changedRows.splice(this.tableTemplate.changedRows.indexOf(search), 1);
+                });
+              }
+            }
+          }
         }
       ],
       mainColumns: [
@@ -346,14 +342,14 @@ export class ServiceManagementComponent implements OnInit {
         },
         {
           type: TableColumnType.DateTime,
-          title: () => this.tableTitle.time_create,
+          title: () => this.tableTitle.timeCreate,
           valueRef: () => "createdAt",
           width: 180,
           allowFilter: false
         },
         {
           type: TableColumnType.DateTime,
-          title: () => this.tableTitle.time_update,
+          title: () => this.tableTitle.timeUpdate,
           valueRef: () => "updatedAt",
           width: 180,
           allowFilter: false

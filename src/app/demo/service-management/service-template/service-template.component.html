@@ -7,10 +7,10 @@
       <katana-textbox [title]="formLabel.protocol" [(model)]="item.protocol" [validationName]="Protocol" *katana-item></katana-textbox>
       <katana-textbox [title]="formLabel.port" [(model)]="item.port" [validationName]="Port" [type]="'number'"*katana-item></katana-textbox>
       <katana-textbox [title]="formLabel.retries" [(model)]="item.retries" [type]="'number'" *katana-item></katana-textbox>
-      <katana-textbox [title]="formLabel.connect_timeout" [(model)]="item.connectTimeout" [type]="'number'" *katana-item></katana-textbox>
-      <katana-textbox [title]="formLabel.write_timeout" [(model)]="item.writeTimeout" [type]="'number'" *katana-item></katana-textbox>
-      <katana-textbox [title]="formLabel.read_timeout" [(model)]="item.readTimeout" [type]="'number'"*katana-item></katana-textbox>
-      <katana-textbox [title]="formLabel.client_certificate" [(model)]="item.clientCertificate" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.connectTimeout" [(model)]="item.connectTimeout" [type]="'number'" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.writeTimeout" [(model)]="item.writeTimeout" [type]="'number'" *katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.readTimeout" [(model)]="item.readTimeout" [type]="'number'"*katana-item></katana-textbox>
+      <katana-textbox [title]="formLabel.clientCertificate" [(model)]="item.clientCertificate" *katana-item></katana-textbox>
     </katana-form>
     <katana-form [column]="1">
       <katana-chips [title]="formLabel.tags" validation-name="Tags" [(model)]="item.tags" *katana-item></katana-chips>

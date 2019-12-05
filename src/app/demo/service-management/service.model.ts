@@ -52,7 +52,7 @@ export class ServiceRequest extends BaseRequest<Service> {
 }
 
 export class ServiceResponse extends BaseResponse<Service> {
-    consumer?: Service;
+    service?: Service;
     token?: string;
     constructor(init?: Partial<ServiceResponse>) {
         super();
@@ -71,6 +71,53 @@ export class ServiceSearchRequest extends SearchBaseRequest {
 export class ServiceSearchResponse extends SearchBaseResponse<Service> {
     token?: string;
     constructor(init?: Partial<ServiceSearchResponse>) {
+        super();
+        Object.assign(this, init);
+    }
+}
+
+export class ServiceCreateRequest extends BaseRequest<Service> {
+    token?: string;
+    constructor(init?: Partial<ServiceCreateRequest>) {
+        super();
+        Object.assign(this, init);
+    }
+}
+
+export class ServiceCreateResponse extends BaseResponse<Service> {
+    token?: string;
+    constructor(init?: Partial<ServiceCreateResponse>) {
+        super();
+        Object.assign(this, init);
+    }
+}
+
+export class ServiceUpdateRequest extends BaseRequest<Service> {
+    token?: string;
+    constructor(init?: Partial<ServiceUpdateRequest>) {
+        super();
+        Object.assign(this, init);
+    }
+}
+
+export class ServiceUpdateResponse extends BaseResponse<Service> {
+    token?: string;
+    constructor(init?: Partial<ServiceUpdateResponse>) {
+        super();
+        Object.assign(this, init);
+    }
+}
+
+export class ServiceDeleteRequest extends BaseRequest<Service> {
+    ids: string[];
+    constructor(init?: Partial<ServiceDeleteRequest>) {
+        super();
+        Object.assign(this, init);
+    }
+}
+
+export class ServiceDeleteResponse extends BaseResponse<Service> {
+    constructor(init?: Partial<ServiceDeleteResponse>) {
         super();
         Object.assign(this, init);
     }

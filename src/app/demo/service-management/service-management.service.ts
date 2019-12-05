@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { IgxExcelExporterService, IgxExcelExporterOptions } from 'igniteui-angular';
 import  * as pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { ServiceSearchRequest, ServiceSearchResponse, Service, KongService } from './service.model';
+import { ServiceSearchRequest, ServiceSearchResponse, Service, KongService, ServiceCreateRequest, ServiceResponse, ServiceDeleteRequest, ServiceRequest, ServiceUpdateRequest, ServiceUpdateResponse } from './service.model';
 import { Observable } from 'rxjs';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -33,28 +33,28 @@ export class ServiceManagementService {
       ));
   }
   
-  public deleteService(item: Service) {
+  public deleteService(item: Service, request: ServiceDeleteRequest): Observable<ServiceResponse> {
     return this.http.delete(this.apiUrl + '/' + item.id);
   }
 
-  public updateService(item: Service) {
+  public updateService(item: Service, request: ServiceUpdateRequest): Observable<ServiceUpdateResponse> {
     return this.http.patch(this.apiUrl + '/' + item.id, this.mapData(item, true));
   }
 
-  public createService(item: Service): Observable<any> {
-    return this.http.post(this.apiUrl, item);
+  public createService(item: Service, request: ServiceCreateRequest): Observable<ServiceResponse> {
+    return this.http.post(this.apiUrl, this.mapData(item, true));
   }
 
   public copyService(item: Service) {
     delete item.id;
+    delete item.createdAt;
+    delete item.updatedAt;
     return this.http.post(this.apiUrl, this.mapData(item, true));
   }
 
   public exportExcel(data) {
     for (let index = 0; index < data.length; index++) {
       const element = data[index];
-      delete element.create;
-      delete element.update;
       element.tags = element.tags? element.tags.toString():null;
     }
     this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_' + Date.now().toString()));
@@ -82,12 +82,10 @@ export class ServiceManagementService {
   public exportPDF(items) {
     for (let index = 0; index < items.length; index++) {
       const element = items[index];
-      delete element.create;
-      delete element.update;
       element.tags = element.tags? element.tags.toString():null;
     }
     var data = [];
-    var columns = ['host', 'created_at', 'connect_timeout', 'id', 'protocol', 'name', 'read_timeout', 'port', 'path', 'updated_at', 'retries', 'write_timeout', 'tags', 'client_certificate']
+    var columns = ['host', 'createdAt', 'connectTimeout', 'id', 'protocol', 'name', 'readTimeout', 'port', 'path', 'updatedAt', 'retries', 'writeTimeout', 'tags', 'clientCertificate']
     data.push(columns);
     items.forEach((row) => {
       var dataRow = [];
@@ -128,15 +126,15 @@ export class ServiceManagementService {
       kongItem.host = data.host;
       kongItem.tags = data.tags;
       kongItem.url = data.url;
-      kongItem.port = data.port;
+      kongItem.port = Number(data.port);
       kongItem.path = data.path;
       kongItem.created_at = data.createdAt / 1000;
       kongItem.updated_at = data.updatedAt / 1000;
       kongItem.protocol = data.protocol;
-      kongItem.retries = data.retries;
-      kongItem.connect_timeout = data.connectTimeout;
-      kongItem.write_timeout = data.writeTimeout;
-      kongItem.read_timeout = data.readTimeout;
+      kongItem.retries = Number(data.retries);
+      kongItem.connect_timeout = Number(data.connectTimeout);
+      kongItem.write_timeout = Number(data.writeTimeout);
+      kongItem.read_timeout = Number(data.readTimeout);
       kongItem.client_certificate = data.clientCertificate;
       return kongItem;
     } else {
@@ -145,15 +143,15 @@ export class ServiceManagementService {
       item.host = data.host;
       item.tags = data.tags;
       item.url = data.url;
-      item.port = data.port;
+      item.port = Number(data.port);
       item.path = data.path;
       item.createdAt = data.created_at * 1000;
       item.updatedAt = data.updated_at * 1000;
       item.protocol = data.protocol;
-      item.retries = data.retries;
-      item.connectTimeout = data.connect_timeout;
-      item.writeTimeout = data.write_timeout;
-      item.readTimeout = data.read_timeout;
+      item.retries = Number(data.retries);
+      item.connectTimeout = Number(data.connect_timeout);
+      item.writeTimeout = Number(data.write_timeout);
+      item.readTimeout = Number(data.read_timeout);
       item.clientCertificate = data.client_certificate;
       return item;
     }

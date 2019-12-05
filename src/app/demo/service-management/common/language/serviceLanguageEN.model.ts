@@ -4,17 +4,17 @@ export class formLabelService {
     path: string;
     protocol: string;
     port: string;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
     required: string;
     retries: string;
-    connect_timeout: string;
-    write_timeout: string;
-    read_timeout: string;
+    connectTimeout: string;
+    writeTimeout: string;
+    readTimeout: string;
     tags: string;
     option: string;
     semi: string;
-    client_certificate: string;
+    clientCertificate: string;
 
     constructor() {
         this.name = 'Name';
@@ -22,17 +22,17 @@ export class formLabelService {
         this.path = 'Path';
         this.protocol = 'Protocol';
         this.port = 'Port';
-        this.created_at = 'Created Date';
-        this.updated_at = 'Recent Update Date';
+        this.createdAt = 'Created Date';
+        this.updatedAt = 'Recent Update Date';
         this.required = 'Required*';
         this.retries = 'Retries';
-        this.connect_timeout = 'Connect Timeout';
-        this.write_timeout = 'Write Timeout';
-        this.read_timeout = 'Read Timeout';
+        this.connectTimeout = 'Connect Timeout';
+        this.writeTimeout = 'Write Timeout';
+        this.readTimeout = 'Read Timeout';
         this.tags = 'Tags';
         this.option = 'Optional';
         this.semi = 'Semi-Optional';
-        this.client_certificate = 'Client Certificate';
+        this.clientCertificate = 'Client Certificate';
     }
 }
 
@@ -43,11 +43,11 @@ export class formDescriptionService {
     host: string;
     port: string;
     path: string;
-    connect_timeout: string;
-    write_timeout: string;
-    read_timeout: string;
+    connectTimeout: string;
+    writeTimeout: string;
+    readTimeout: string;
     tags: string;
-    client_certificate: string;
+    clientCertificate: string;
 
     constructor() {
         this.name = 'The Service name.';
@@ -56,11 +56,11 @@ export class formDescriptionService {
         this.host = 'The host of the upstream server.',
         this.port = 'The upstream server port. Defaults to <code>80</code>.',
         this.path = 'The path to be used in requests to the upstream server.',
-        this.connect_timeout = 'The timeout in milliseconds for establishing a connection to the upstream server. Defaults to <code>60000</code>.',
-        this.write_timeout = 'The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server. Defaults to <code>60000</code>.',
-        this.read_timeout = 'The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server. Defaults to <code>60000</code>.',
+        this.connectTimeout = 'The timeout in milliseconds for establishing a connection to the upstream server. Defaults to <code>60000</code>.',
+        this.writeTimeout = 'The timeout in milliseconds between two successive write operations for transmitting a request to the upstream server. Defaults to <code>60000</code>.',
+        this.readTimeout = 'The timeout in milliseconds between two successive read operations for transmitting a request to the upstream server. Defaults to <code>60000</code>.',
         this.tags = 'An optional set of strings associated with the Service, for grouping and filtering.',
-        this.client_certificate = "Certificate to be used as client certificate while TLS handshaking to the upstream server. With form-encoded, the notation is <code>client_certificate.id=&ltclient_certificate_id&gt</code>. With JSON, use <code>\"client_certificate\":{\"id\":\"&ltclient_certificate_id&gt\"}</code>."
+        this.clientCertificate = "Certificate to be used as client certificate while TLS handshaking to the upstream server. With form-encoded, the notation is <code>client_certificate.id=&ltclient_certificate_id&gt</code>. With JSON, use <code>\"client_certificate\":{\"id\":\"&ltclient_certificate_id&gt\"}</code>."
     }
 }
 
@@ -69,8 +69,8 @@ export class tableTitleService {
     host: string;
     id: string;
     port: string;
-    time_create: string;
-    time_update: string;
+    timeCreate: string;
+    timeUpdate: string;
     path: string;
     tag: string;
 
@@ -79,8 +79,8 @@ export class tableTitleService {
         this.host = 'Host';
         this.id = 'ID';
         this.port = 'Port';
-        this.time_create = 'Time Created';
-        this.time_update = 'Recent Updated';
+        this.timeCreate = 'Time Created';
+        this.timeUpdate = 'Recent Updated';
         this.path = 'Path';
         this.tag = 'Tag'
     }
