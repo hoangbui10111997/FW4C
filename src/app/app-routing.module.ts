@@ -17,9 +17,9 @@ const menuTabs: MenuTab[] = [
       },
       {
         label: 'Service Management',
-        icon: 'fa fa-bar-chart',
+        icon: 'fa fa-cloud',
         children: [
-          { state: 'service', name: 'Service Management', type: 'link', icon: 'fa fa-calendar-check-o' }
+          { state: 'services', name: 'Service Management', type: 'link', icon: 'fa fa-cloud' }
         ]
       } 
     ]
@@ -35,7 +35,13 @@ const routes: Routes = [
         url: '/dashboard'
       },
       menuTabs: menuTabs,
-      menuType: 'TOP'
+      menuType: 'TOP',
+      // recommendation: {
+      //   template: ServiceManagementComponent,
+      //   data: {
+      //     view: 'searchView'
+      //   }
+      // }
     },
     children: [
       {
@@ -43,8 +49,8 @@ const routes: Routes = [
         component: DashboardDemoComponent
       },
       {
-        path: 'service',
-        component: ServiceManagementComponent
+        path: 'services',
+        component: ServiceManagementComponent,
       },
       {
         path: 'auth',

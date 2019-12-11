@@ -71,10 +71,10 @@ export class ServiceManagementService {
       path: '',
       protocol: '',
       retries: '',
-      connect_timeout: '',
-      write_timeout: '',
-      read_timeout: '',
-      client_certificate: ''
+      connectTimeout: '',
+      writeTimeout: '',
+      readTimeout: '',
+      clientCertificate: ''
     };
     this.excelExportService.exportData(data, new IgxExcelExporterOptions('Service_Template_' + Date.now().toString()));
   }
@@ -117,7 +117,7 @@ export class ServiceManagementService {
     pdfMake.createPdf(docDefinition).download('Service_Template_' + Date.now().toString());
   }
 
-  private mapData(data?: any, reversed?: boolean) {
+  public mapData(data?: any, reversed?: boolean) {
     var item: Service = new Service();
     var kongItem: KongService = new KongService();
     if(reversed) {

@@ -1,7 +1,9 @@
 export class formLabelService {
     name: string;
     host: string;
+    hosts: string;
     path: string;
+    paths: string;
     protocol: string;
     port: string;
     createdAt: string;
@@ -15,11 +17,19 @@ export class formLabelService {
     option: string;
     semi: string;
     clientCertificate: string;
+    https_redirect_status_code: string;
+    protocols: string;
+    methods: string;
+    regex_priority: string;
+    strip_path: string;
+    preserve_host: string;
 
     constructor() {
         this.name = 'Name';
         this.host = 'Host';
+        this.hosts = 'Hosts';
         this.path = 'Path';
+        this.paths = 'Paths';
         this.protocol = 'Protocol';
         this.port = 'Port';
         this.createdAt = 'Created Date';
@@ -33,6 +43,12 @@ export class formLabelService {
         this.option = 'Optional';
         this.semi = 'Semi-Optional';
         this.clientCertificate = 'Client Certificate';
+        this.protocols = 'Protocols';
+        this.methods = 'Methods';
+        this.regex_priority = 'Regex Priority';
+        this.strip_path = 'Strip Path';
+        this.https_redirect_status_code = 'Https Redirect Status Code';
+        this.preserve_host = 'Preserve Host';
     }
 }
 

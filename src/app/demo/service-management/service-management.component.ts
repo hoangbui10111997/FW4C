@@ -1,14 +1,15 @@
-import {Component, ViewChild, ElementRef, OnInit} from "@angular/core";
-import {TableOption, ModalService, TemplateViewModel, TableComponent, ConfirmViewModel, TableMode, TableColumnType, TableAction, TableConstant, DataService, ValidationRule, ValidationOption, CustomValidationRule, ValidationService, RequiredValidationRule} from "ngx-fw4c";
+import { Component, ViewChild, ElementRef, OnInit, Input } from "@angular/core";
+import { TableOption, ModalService, TemplateViewModel, TableComponent, ConfirmViewModel, TableMode, TableColumnType, TableAction, TableConstant, DataService, ValidationRule, ValidationOption, CustomValidationRule, ValidationService, RequiredValidationRule, AggregatorService, KeyConst } from "ngx-fw4c";
 import { ServiceManagementService } from './service-management.service';
 import { ServiceTemplateComponent } from './service-template/service-template.component'
-import { Service, ServiceRequest, ServiceDeleteRequest, ServiceUpdateRequest, ServiceCreateRequest } from './service.model';
+import { Service, ServiceRequest, ServiceDeleteRequest, ServiceUpdateRequest, ServiceCreateRequest, ServiceSearchRequest } from './service.model';
 import { tableTitleService, tableAction, actionButton, actionTitle, actionMessageService } from './common/language/serviceLanguageEN.model';
 import { of } from 'rxjs';
 import { ServiceTemplateService } from '../service-management/service-template/service-template.service'
 import { ImportExcelComponent } from './import-excel/import-excel.component';
 import { ExportDataComponent } from './export-data/export-data.component';
 import { map } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -18,20 +19,35 @@ import { map } from 'rxjs/operators';
 export class ServiceManagementComponent implements OnInit {
   @ViewChild("formRef", { static: true }) public formRef: ElementRef;
   @ViewChild("tableTemplate", { static: true }) public tableTemplate: TableComponent;
-  
+
+  @Input() public view;
+
   public option: TableOption;
   public tableTitle: tableTitleService = new tableTitleService();
-  public tableAction: tableAction = new tableAction(); 
+  public tableAction: tableAction = new tableAction();
   public actionButton: actionButton = new actionButton();
   public actionTitle: actionTitle = new actionTitle();
   public actionMessage: actionMessageService = new actionMessageService();
   public iserror = false;
   public error: string;
+  public data;
 
-  constructor(private _modalService: ModalService, private _serviceManagementService: ServiceManagementService, private _dataService: DataService, private _serviceTemplateService: ServiceTemplateService, private _validationService: ValidationService) {}
+  constructor(
+    private _modalService: ModalService,
+    private _serviceManagementService: ServiceManagementService,
+    private _dataService: DataService,
+    private _serviceTemplateService: ServiceTemplateService,
+    private _agregatorService: AggregatorService,
+    private _router: Router,
+    private _route: ActivatedRoute) { }
 
   ngOnInit() {
     this.initTable();
+    this.registerEvents();
+    this._serviceManagementService.search(new ServiceRequest())
+    .subscribe(res => {
+      this.data = res.items;
+    })
   }
 
   private initTable() {
@@ -49,6 +65,7 @@ export class ServiceManagementComponent implements OnInit {
           customClass: "primary",
           title: () => this.tableAction.new,
           executeAsync: (item: Service) => {
+            console.log(this.view);
             this._modalService.showTemplateDialog(new TemplateViewModel({
               icon: "fa fa-plus",
               validationKey: 'ServiceTemplateComponent',
@@ -63,13 +80,13 @@ export class ServiceManagementComponent implements OnInit {
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: (response: any, close, provider: any) => {
                 this._serviceManagementService.createService(provider.item, new ServiceCreateRequest())
-                .subscribe(() => {
-                  this.tableTemplate.reload();
-                }, error => {
-                  this.iserror = true;
-                  this.error = error.error.message;
-                  setTimeout(() => this.iserror = false, 5000);
-                });
+                  .subscribe(() => {
+                    this.tableTemplate.reload();
+                  }, error => {
+                    this.iserror = true;
+                    this.error = error.error.message;
+                    setTimeout(() => this.iserror = false, 5000);
+                  });
               }
             }));
           }
@@ -78,7 +95,7 @@ export class ServiceManagementComponent implements OnInit {
           icon: "fa fa-save",
           customClass: "warning",
           hide: () => {
-            if(this.tableTemplate.changedRows.length === 0) {
+            if (this.tableTemplate.changedRows.length === 0) {
               return true;
             } else {
               return false;
@@ -86,14 +103,14 @@ export class ServiceManagementComponent implements OnInit {
           },
           title: () => this.tableAction.save,
           executeAsync: () => {
-            for(let i = 0; i < this.tableTemplate.changedRows.length; i++) {
+            for (let i = 0; i < this.tableTemplate.changedRows.length; i++) {
               this._serviceManagementService.updateService(this.tableTemplate.changedRows[i].currentItem, new ServiceUpdateRequest({}))
-              .subscribe(() => {
-                if (i === (this.tableTemplate.changedRows.length - 1)) {
-                  this.tableTemplate.changedRows = [];
-                  this.tableTemplate.reload();
-                }
-              });
+                .subscribe(() => {
+                  if (i === (this.tableTemplate.changedRows.length - 1)) {
+                    this.tableTemplate.changedRows = [];
+                    this.tableTemplate.reload();
+                  }
+                });
             }
           }
         },
@@ -110,14 +127,13 @@ export class ServiceManagementComponent implements OnInit {
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: data => {
                 if (data === 'Excel') {
-                  // var data = this._dataService.cloneItems(this.tableTemplate.items);
-                  // this._serviceManagementService.exportExcel(data);
-                  this.tableTemplate.exportToExcel('Service_' + Date.now().toString());
+                  var data = this._dataService.cloneItems(this.tableTemplate.items);
+                  this._serviceManagementService.exportExcel(data)
                 } else if (data === 'Template') {
                   this._serviceManagementService.exportTemplate();
                 } else if (data === 'PDF') {
                   var data = this._dataService.cloneItems(this.tableTemplate.items);
-						      this._serviceManagementService.exportPDF(data);
+                  this._serviceManagementService.exportPDF(data);
                 }
               }
             }));
@@ -134,11 +150,13 @@ export class ServiceManagementComponent implements OnInit {
               title: this.actionTitle.import,
               validationKey: 'ImportExcelComponent',
               acceptCallback: items => {
-                for(let i = 0; i < items.length; i++) {
+                for (let i = 0; i < items.length; i++) {
                   this._serviceManagementService.createService(items[i], new ServiceCreateRequest())
-                  .subscribe(() => {
-                    this.tableTemplate.reload();
-                  })
+                    .subscribe(() => {
+                      if (i === (items.length - 1)) {
+                        this.tableTemplate.reload();
+                      }
+                    })
                 }
               }
             }))
@@ -146,6 +164,13 @@ export class ServiceManagementComponent implements OnInit {
         }
       ],
       actions: [
+        {
+          icon: "fa fa-wrench",
+          customClass: "basic",
+          executeAsync: (item) => {
+            this._router.navigate([item.id], {relativeTo: this._route})
+          }
+        },
         {
           icon: "fa fa-edit",
           customClass: "default",
@@ -163,7 +188,7 @@ export class ServiceManagementComponent implements OnInit {
               btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: (response: any, close, provider: any) => {
-                  this._serviceManagementService.updateService(provider.item, new ServiceUpdateRequest({}))
+                this._serviceManagementService.updateService(provider.item, new ServiceUpdateRequest({}))
                   .subscribe(() => {
                     this.tableTemplate.reload();
                   }, error => {
@@ -183,16 +208,17 @@ export class ServiceManagementComponent implements OnInit {
           customClass: "success",
           executeAsync: (item) => {
             var copyItem = this._dataService.cloneItem(item);
-            var check = this.tableTemplate.items.filter(x=>x.name.includes(copyItem.name+'copy'));
-            copyItem.name=copyItem.name+'copy'+(check.length+1);
+            var check = this.data.filter(x => x.name.includes(copyItem.name + '_copy'));
+            copyItem.name = copyItem.name + '_copy' + (check.length + 1);
             this._serviceManagementService.copyService(copyItem)
-            .subscribe(() => {
-              this.tableTemplate.reload();
-            });
+              .subscribe(() => {
+                this.data.push(copyItem);
+                this.tableTemplate.reload();
+              });
           }
         },
         {
-          icon: "fa fa-remove",
+          icon: "fa fa-trash-o",
           customClass: "danger",
           executeAsync: (item) => {
             this._modalService.showConfirmDialog(new ConfirmViewModel({
@@ -202,9 +228,9 @@ export class ServiceManagementComponent implements OnInit {
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: () => {
                 this._serviceManagementService.deleteService(item, new ServiceDeleteRequest())
-                .subscribe(()=>{
-                  this.tableTemplate.reload();
-                });
+                  .subscribe(() => {
+                    this.tableTemplate.reload();
+                  });
               }
             }))
           }
@@ -215,17 +241,21 @@ export class ServiceManagementComponent implements OnInit {
           icon: "fa fa-copy",
           title: () => this.tableAction.copy,
           executeAsync: (item, e, provider: TableComponent) => {
+            console.log(this.data);
             var copyItems = this._dataService.cloneItems(provider.selectedItems);
-            for(let i = 0; i < copyItems.length; i++) {
+            for (let i = 0; i < copyItems.length; i++) {
               var item = copyItems[i];
-              var check = item.name && this.tableTemplate.items.filter(x=>x.name.includes(item.name+'_copy') && x.name.length >= item.name.length + 5 && x.name.length <= item.name.length + 8);
-              item.name=item.name+'_copy'+(check.length+1);
+              var check = this.data.filter(x => x.name && x.name.includes(item.name + '_copy') && x.name.length >= item.name.length + 5 && x.name.length <= item.name.length + 8);
+              item.name = item.name + '_copy' + (check.length + 1);
+              this.data.push(this._serviceManagementService.mapData(item));
               this._serviceManagementService.copyService(item)
-              .subscribe(() => {
-                if(i === (copyItems.length - 1)) {
+                .subscribe(() => {
+                  if (i === (copyItems.length - 1)) {
+                    this.tableTemplate.reload();
+                  }
+                }, error => {
                   this.tableTemplate.reload();
-                }
-              });
+                });
             }
           }
         },
@@ -241,10 +271,15 @@ export class ServiceManagementComponent implements OnInit {
               btnAcceptTitle: this.actionButton.accept,
               btnCancelTitle: this.actionButton.cancel,
               acceptCallback: () => {
-                for(let i=0; i < provider.selectedItems.length; i++){
-                  this._serviceManagementService.deleteService(provider.selectedItems[i], new ServiceDeleteRequest()).subscribe(() => {
-                    this.tableTemplate.reload();
-                  });
+                for (let i = 0; i < provider.selectedItems.length; i++) {
+                  this._serviceManagementService.deleteService(provider.selectedItems[i], new ServiceDeleteRequest())
+                    .subscribe(() => {
+                      if (i === (provider.selectedItems.length - 1)) {
+                        this.tableTemplate.reload();
+                      }
+                    }, error => {
+                      this.tableTemplate.reload();
+                    });
                 }
               }
             }))
@@ -256,13 +291,13 @@ export class ServiceManagementComponent implements OnInit {
           title: () => this.tableAction.save,
           customClass: "warning",
           executeAsync: () => {
-            for(let i=0; i < this.tableTemplate.selectedItems.length; i++) {
+            for (let i = 0; i < this.tableTemplate.selectedItems.length; i++) {
               var search = this.tableTemplate.changedRows.find(x => x.currentItem.id === this.tableTemplate.selectedItems[i].id);
               if (search) {
                 this._serviceManagementService.updateService(this.tableTemplate.selectedItems[i], new ServiceUpdateRequest({}))
-                .subscribe(() => {
-                  this.tableTemplate.changedRows.splice(this.tableTemplate.changedRows.indexOf(search), 1);
-                });
+                  .subscribe(() => {
+                    this.tableTemplate.changedRows.splice(this.tableTemplate.changedRows.indexOf(search), 1);
+                  });
               }
             }
           }
@@ -359,6 +394,16 @@ export class ServiceManagementComponent implements OnInit {
         searchAsync: request => {
           return of(true);
         }
+      }
+    });
+  }
+
+  private registerEvents(): void {
+    this._agregatorService.subscribe(KeyConst.Search, (response: any) => {
+      if(!response.all) {
+        var filter = response.keyword;
+        this.tableTemplate.setFilter('searchText', filter);
+        this.tableTemplate.reload(true).subscribe();
       }
     });
   }
