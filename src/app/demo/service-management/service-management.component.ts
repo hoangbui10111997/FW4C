@@ -9,7 +9,7 @@ import { ServiceTemplateService } from '../service-management/service-template/s
 import { ImportExcelComponent } from './import-excel/import-excel.component';
 import { ExportDataComponent } from './export-data/export-data.component';
 import { map } from 'rxjs/operators';
-import { Router, ActivatedRoute } from '@angular/router';
+import { OptionalServiceComponent } from './optional/optional-service.component';
 
 
 @Component({
@@ -19,8 +19,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class ServiceManagementComponent implements OnInit {
   @ViewChild("formRef", { static: true }) public formRef: ElementRef;
   @ViewChild("tableTemplate", { static: true }) public tableTemplate: TableComponent;
-
-  @Input() public view;
 
   public option: TableOption;
   public tableTitle: tableTitleService = new tableTitleService();
@@ -37,9 +35,7 @@ export class ServiceManagementComponent implements OnInit {
     private _serviceManagementService: ServiceManagementService,
     private _dataService: DataService,
     private _serviceTemplateService: ServiceTemplateService,
-    private _agregatorService: AggregatorService,
-    private _router: Router,
-    private _route: ActivatedRoute) { }
+    private _agregatorService: AggregatorService,) { }
 
   ngOnInit() {
     this.initTable();
@@ -65,7 +61,6 @@ export class ServiceManagementComponent implements OnInit {
           customClass: "primary",
           title: () => this.tableAction.new,
           executeAsync: (item: Service) => {
-            console.log(this.view);
             this._modalService.showTemplateDialog(new TemplateViewModel({
               icon: "fa fa-plus",
               validationKey: 'ServiceTemplateComponent',
@@ -107,7 +102,7 @@ export class ServiceManagementComponent implements OnInit {
               this._serviceManagementService.updateService(this.tableTemplate.changedRows[i].currentItem, new ServiceUpdateRequest({}))
                 .subscribe(() => {
                   if (i === (this.tableTemplate.changedRows.length - 1)) {
-                    this.tableTemplate.changedRows = [];
+                    this.tableTemplate.resetChanges();
                     this.tableTemplate.reload();
                   }
                 });
@@ -151,8 +146,13 @@ export class ServiceManagementComponent implements OnInit {
               validationKey: 'ImportExcelComponent',
               acceptCallback: items => {
                 for (let i = 0; i < items.length; i++) {
+                  items[i].tags = items[i].tags? items[i].tags.split(','):[];
                   this._serviceManagementService.createService(items[i], new ServiceCreateRequest())
                     .subscribe(() => {
+                      if (i === (items.length - 1)) {
+                        this.tableTemplate.reload();
+                      }
+                    }, error => {
                       if (i === (items.length - 1)) {
                         this.tableTemplate.reload();
                       }
@@ -168,7 +168,19 @@ export class ServiceManagementComponent implements OnInit {
           icon: "fa fa-wrench",
           customClass: "basic",
           executeAsync: (item) => {
-            this._router.navigate([item.id], {relativeTo: this._route})
+            this._modalService.showTemplateDialog(new TemplateViewModel({
+              template: OptionalServiceComponent,
+              icon: "fa fa-wrench",
+              title: this.actionTitle.optional,
+              validationKey: 'OptionalServiceComponent',
+              customSize: 'modal-lg',
+              data: {
+                item: this._dataService.cloneItem(item),
+                action: 'Edit'
+              },
+              btnAcceptTitle: this.actionButton.accept,
+              btnCancelTitle: this.actionButton.cancel,
+            }))
           }
         },
         {
@@ -241,7 +253,6 @@ export class ServiceManagementComponent implements OnInit {
           icon: "fa fa-copy",
           title: () => this.tableAction.copy,
           executeAsync: (item, e, provider: TableComponent) => {
-            console.log(this.data);
             var copyItems = this._dataService.cloneItems(provider.selectedItems);
             for (let i = 0; i < copyItems.length; i++) {
               var item = copyItems[i];
@@ -254,7 +265,9 @@ export class ServiceManagementComponent implements OnInit {
                     this.tableTemplate.reload();
                   }
                 }, error => {
-                  this.tableTemplate.reload();
+                  if (i === (copyItems.length - 1)) {
+                    this.tableTemplate.reload();
+                  }
                 });
             }
           }
@@ -278,7 +291,9 @@ export class ServiceManagementComponent implements OnInit {
                         this.tableTemplate.reload();
                       }
                     }, error => {
-                      this.tableTemplate.reload();
+                      if (i === (provider.selectedItems.length - 1)) {
+                        this.tableTemplate.reload();
+                      }
                     });
                 }
               }
@@ -297,6 +312,8 @@ export class ServiceManagementComponent implements OnInit {
                 this._serviceManagementService.updateService(this.tableTemplate.selectedItems[i], new ServiceUpdateRequest({}))
                   .subscribe(() => {
                     this.tableTemplate.changedRows.splice(this.tableTemplate.changedRows.indexOf(search), 1);
+                    this.tableTemplate.resetChanges();
+                    this.tableTemplate.reload();
                   });
               }
             }
@@ -399,7 +416,7 @@ export class ServiceManagementComponent implements OnInit {
   }
 
   private registerEvents(): void {
-    this._agregatorService.subscribe(KeyConst.Search, (response: any) => {
+    this._agregatorService.subscribe(KeyConst.KeywordChanged, (response: any) => {
       if(!response.all) {
         var filter = response.keyword;
         this.tableTemplate.setFilter('searchText', filter);

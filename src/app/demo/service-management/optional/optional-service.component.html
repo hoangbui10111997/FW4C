@@ -1,0 +1,13 @@
+<katana-card>
+	<katana-tabs [displayMode]="'full'">
+		<katana-tab [name]="'Detail'" [icon]="'fa fa-info-circle'">
+			<app-service-template [item]="item">Loading...</app-service-template>
+		</katana-tab>
+		<katana-tab [name]="'Router'" [icon]="'fa fa-road'">
+			<katana-daterange-picker></katana-daterange-picker>
+		</katana-tab>
+		<katana-tab [name]="'Plugin'" [icon]="'fa fa-plug'">
+			<katana-editor></katana-editor>
+		</katana-tab>
+	</katana-tabs>
+</katana-card>

@@ -8,13 +8,15 @@ import { ServiceTemplateComponent } from './service-template/service-template.co
 import { ImportExcelComponent } from './import-excel/import-excel.component';
 import { ExportDataComponent } from './export-data/export-data.component';
 import { DashboardDemoComponent } from '../dashboard';
+import { OptionalServiceComponent } from './optional/optional-service.component';
 
 const declarations = [
   ServiceManagementComponent,
   ServiceTemplateComponent,
   ImportExcelComponent,
   ExportDataComponent,
-  DashboardDemoComponent
+  DashboardDemoComponent,
+  OptionalServiceComponent
 ];
 
 @NgModule({

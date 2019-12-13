@@ -90,6 +90,15 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
             return this._serviceTemplateSerivce.validatePath(value);
           })
         ]
+      }),
+      new ValidationOption({
+        validationName: "Client Certificate",
+        valueResolver: () => this.item.clientCertificate,
+        rules: [
+          new CustomValidationRule((value) => {
+            return this._serviceTemplateSerivce.validateCertificate(value);
+          })
+        ]
       })
     ]
 
@@ -126,7 +135,6 @@ export class ServiceTemplateComponent implements OnInit, AfterViewInit {
   }
 
   public getValidator(): ValidationService {
-
     return this._validationService;
   }
 

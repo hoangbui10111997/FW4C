@@ -36,12 +36,9 @@ const routes: Routes = [
       },
       menuTabs: menuTabs,
       menuType: 'TOP',
-      // recommendation: {
-      //   template: ServiceManagementComponent,
-      //   data: {
-      //     view: 'searchView'
-      //   }
-      // }
+      recommendation: {
+        template: ServiceManagementComponent,
+      }
     },
     children: [
       {

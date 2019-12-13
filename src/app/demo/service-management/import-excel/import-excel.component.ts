@@ -35,6 +35,7 @@ export class ImportExcelComponent implements OnInit {
 		}
 		fileReader.readAsArrayBuffer(this.file);
 	}
+	
 	constructor(private _validationService: ValidationService, ) { }
 
 	ngOnInit() {

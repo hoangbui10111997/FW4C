@@ -73,4 +73,16 @@ export class ServiceTemplateService{
             message: 'Path must start with /'
         }))
     }
+
+    public validateCertificate(cert: string): Observable<ValidationRuleResponse> {
+        const certregex = /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/;
+        return of(new ValidationRuleResponse({
+            status: certregex.test(cert),
+            message: 'Must be an Certificate ID'
+        }))
+    }
+
+    // public validateNameSlash(name: string): Observable<ValidationRuleResponse> {
+    //     var tag = name.find(x=>x.indexOf(' ') != -1);
+    // }
 }
