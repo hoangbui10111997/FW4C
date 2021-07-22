@@ -43,7 +43,7 @@
     "rxjs": "~6.4.0",
     "ts-xlsx": "0.0.11",
     "tslib": "^1.10.0",
-    "xlsx": "^0.15.3",
+    "xlsx": "^0.17.0",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
